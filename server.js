@@ -7,7 +7,7 @@ import { sequelize } from './db.js';
 import cors from 'cors';
 
 const app = express();
-
+  
 const { NODE_ENV, PORT } = process.env;
 
 sequelize
