@@ -2,44 +2,35 @@
 
 import { DataTypes } from 'sequelize';
 import sequelize from '../../db';
-import Employee from '../user/employee';
 
 const EarlyPayments = sequelize.define('EarlyPayments', {
-  RequestID: {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  EmployeeID: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Employee,
-      key: 'EmployeeID',
-    },
-    allowNull: false,
-  },
-  ManagerID: {
+  managerID: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  RequestData: {
+  requestData: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  ApprovalStatus: {
+  approvalStatus: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  Reason: {
+  reason: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  RequestPaymentAmount: {
+  requestPaymentAmount: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  Note: {
+  note: {
     type: DataTypes.TEXT,
     allowNull: true,
   },

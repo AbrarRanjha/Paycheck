@@ -9,15 +9,15 @@ const {
   DATABASE_USERNAME,
   DATABASE_PASSWORD,
   DATABASE_NAME,
-  DATABASE_PORT,
 } = process.env;
 
-export const sequelize = new Sequelize({
-  dialect: 'mysql',
+export const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD, {
   host: DATABASE_HOST,
-  username: DATABASE_USERNAME,
-  password: DATABASE_PASSWORD,
-  database: DATABASE_NAME,
-  port: parseInt(DATABASE_PORT || '3306', 10),
+  dialect: 'mysql',
+  dialectOptions: {
+    connectTimeout: 20000 // milliseconds
+  }
+
 });
+
 console.log(sequelize.models);

@@ -10,23 +10,23 @@ const Upload = sequelize.define('Upload', {
     autoIncrement: true,
   },
 
-  FileName: {
+  fileName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  Date: {
+  date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  Category: {
+  category: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  Comments: {
+  comments: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  ValidationStatus: {
+  validationStatus: {
     type: DataTypes.STRING,
     allowNull: false,
   },

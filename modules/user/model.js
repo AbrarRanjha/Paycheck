@@ -1,9 +1,9 @@
 // /modules/user/employee.js
 
 import { DataTypes } from 'sequelize';
-import sequelize from '../../db'; // Assuming db.js exports an initialized Sequelize instance
+import {sequelize} from '../../db.js'; // Assuming db.js exports an initialized Sequelize instance
 
-const Employee = sequelize.define('Employee', {
+const Employee = sequelize.define('Employee',{
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -20,10 +20,6 @@ const Employee = sequelize.define('Employee', {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true,
-    },
   },
   phoneNo: {
     type: DataTypes.STRING,
@@ -33,7 +29,7 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  profileUrl: {
+  profileImageUrl: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -41,8 +37,12 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
-  timestamps: true, // Adds createdAt and updatedAt columns
+  timestamps: true,
 });
 
 export default Employee;

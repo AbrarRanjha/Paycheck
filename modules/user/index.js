@@ -1,11 +1,10 @@
+
 import { Router } from 'express';
+import EmployeeController from './controller.js';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json('success');
-});
-
-// You can define more routes related to users here
+router.post('/register', EmployeeController.createEmployeeController);
+router.get('/:id', EmployeeController.getEmployeeByIdController);
 
 export default router;

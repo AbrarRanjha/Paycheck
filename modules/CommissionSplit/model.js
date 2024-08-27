@@ -3,39 +3,33 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../db';
 
-const RefundPayments = sequelize.define('RefundPayments', {
+const CommissionSplit = sequelize.define('CommissionSplit', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  managerID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  requestData: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  approvalStatus: {
+
+  employeeSplitPercentage: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
-  reason: {
+  employeeSplitAmount: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  advisorSplitPercentage: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  requestPaymentAmount: {
+  advisorSplitAmount: {
     type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  note: {
-    type: DataTypes.TEXT,
     allowNull: true,
   },
+
 }, {
   timestamps: true,
 });
 
-export default RefundPayments;
+export default CommissionSplit;

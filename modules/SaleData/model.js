@@ -1,53 +1,81 @@
-// /modules/salesData/salesData.js
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../../db';
-import Employee from '../user/employee';
 
 const SalesData = sequelize.define('SalesData', {
-  TransactionID: {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  EmployeeID: {
+  transactionID: {
     type: DataTypes.INTEGER,
-    references: {
-      model: Employee,
-      key: 'EmployeeID',
-    },
     allowNull: false,
   },
-  SaleAmount: {
+  saleAmount: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: true,
   },
-  Date: {
+  date: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
-  PlanType: {
+  planType: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  CommissionRate: {
+  commissionRate: {
     type: DataTypes.FLOAT,
     allowNull: true,
   },
-  GrossCommission: {
+  grossCommission: {
     type: DataTypes.FLOAT,
     allowNull: true,
   },
-  PaymentStatus: {
+  paymentStatus: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
-  Comments: {
+  comments: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // Other fields as per your schema...
+  service: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  IORef: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  GrossFCI: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  FCIRecognition: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  provider: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  submittedPremium: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  payable: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  incomeType: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  paymentType: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   timestamps: true,
 });
