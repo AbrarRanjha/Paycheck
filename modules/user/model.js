@@ -11,15 +11,15 @@ const Employee = sequelize.define('Employee',{
   },
   firstName: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   lastName: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   phoneNo: {
     type: DataTypes.STRING,
@@ -27,7 +27,7 @@ const Employee = sequelize.define('Employee',{
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   profileImageUrl: {
     type: DataTypes.STRING,
@@ -40,15 +40,6 @@ const Employee = sequelize.define('Employee',{
   role: {
     type: DataTypes.STRING,
     allowNull: true,
-  },
-  resetToken: {
-    type: DataTypes.STRING,
-  },
-  resetTokenExpiry: {
-    type: DataTypes.DATE,
-  },
-  notificationList: {
-    type: DataTypes.JSON,
   },
 }, {
   timestamps: true,

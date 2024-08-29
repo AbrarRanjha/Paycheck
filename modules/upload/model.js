@@ -1,7 +1,7 @@
 // /modules/upload/upload.js
 
 import { DataTypes } from 'sequelize';
-import {sequelize} from '../../db.js';
+import sequelize from '../../db';
 
 const Upload = sequelize.define('Upload', {
   id: {
