@@ -1,7 +1,8 @@
 // /modules/upload/upload.js
 
 import { DataTypes } from 'sequelize';
-import sequelize from '../../db';
+import {sequelize} from '../../db.js';
+import SalesData from '../SaleData/model.js';
 
 const Upload = sequelize.define('Upload', {
   id: {
@@ -16,11 +17,11 @@ const Upload = sequelize.define('Upload', {
   },
   date: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
   category: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   comments: {
     type: DataTypes.TEXT,
@@ -28,10 +29,12 @@ const Upload = sequelize.define('Upload', {
   },
   validationStatus: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, {
   timestamps: true,
 });
 
 export default Upload;
+Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
+SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });
