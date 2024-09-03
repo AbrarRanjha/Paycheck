@@ -1,6 +1,6 @@
 import saleData from './model.js';
 class saleDataService {
-  async getsaleDataById(id) {
+  async getSaleDataById(id) {
     try {
       const res = await saleData.findByPk(id);
       return res;
@@ -8,6 +8,23 @@ class saleDataService {
       throw new Error('Failed to get saleData: ' + error.message);
     }
   }
+  async getAllSaleData(limit, skip) {
+    try {
+      limit = parseInt(limit, 10);
+      skip = parseInt(skip, 10);
+      console.log('limit: ' +  limit, skip);
+
+      const res = await saleData.findAll({
+        limit: limit,
+        offset: skip,
+      });
+      return res;
+    } catch (error) {
+      console.log('error', error);
+
+      throw new Error('Failed to get saleData: ' + error.message);
+    }
+  }
 }
 
-export default new saleDataService(); 
+export default new saleDataService();

@@ -15,6 +15,19 @@ class SaleDataController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getSaleData(req, res) {
+    try {
+      const {limit,skip}=req.query      
+      const SaleData = await SaleDataService.getAllSaleData(limit,skip);
+      if (SaleData) {
+        res.status(200).json(SaleData);
+      } else {
+        res.status(404).json({ error: 'SaleData not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
 }
 

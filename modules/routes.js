@@ -7,6 +7,7 @@ import earlyPaymentRoutes from './EarlyPayment/index.js';
 import Payout from './Payouts/index.js';
 import CommissionSplit from './CommissionSplit/index.js';
 import EmployeeReports from './EmployeeReports/index.js';
+import ErrorLogs from './ErrorLogs/index.js';
 const router = Router();
 
 router.use('/user', userRoutes);
@@ -18,5 +19,6 @@ router.use('/payouts', Payout);
 router.use('/commissionSplits', CommissionSplit);
 router.use('/employeeReports', EmployeeReports);
 router.use('/earlyPayment', earlyPaymentRoutes);
+router.use('/errorLogs', ErrorLogs);
 
 export default router;

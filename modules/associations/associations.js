@@ -21,8 +21,5 @@ RefundPayments.belongsTo(Employee, { foreignKey: 'EmployeeID' });
 Employee.hasMany(Payout, { foreignKey: 'EmployeeID' });
 Payout.belongsTo(Employee, { foreignKey: 'EmployeeID' });
 
-// Employee.hasMany(CommissionSplit, { foreignKey: 'EmployeeID' });
-// CommissionSplit.belongsTo(Employee, { foreignKey: 'EmployeeID' });
-
 Employee.hasMany(EmployeeReports, { foreignKey: 'EmployeeID' });
 EmployeeReports.belongsTo(Employee, { foreignKey: 'EmployeeID' });

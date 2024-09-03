@@ -10,7 +10,7 @@ import { bootstrap } from "./utils/bootstrap.js";
 var app = express();
 
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => {
     bootstrap();
 
