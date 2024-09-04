@@ -1,40 +1,37 @@
-// /modules/upload/upload.js
-
 import { DataTypes } from 'sequelize';
 import {sequelize} from '../../db.js';
 import SalesData from '../SaleData/model.js';
 
-const Upload = sequelize.define('Upload', {
+const ErrorLogs = sequelize.define('ErrorLogs', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-  },
-
-  fileName: {
-    type: DataTypes.STRING,
     allowNull: false,
+  },
+  errrorDescription: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   date: {
     type: DataTypes.DATE,
     allowNull: true,
   },
-  category: {
+  status: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  comments: {
-    type: DataTypes.TEXT,
+  comment: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
-  validationStatus: {
+  errorLocation: {
     type: DataTypes.STRING,
     allowNull: true,
   },
 }, {
   timestamps: true,
 });
-
-export default Upload;
-Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
-SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });
+SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
+ErrorLogs.belongsTo(SalesData, { foreignKey: 'uploadId' });
+export default ErrorLogs;

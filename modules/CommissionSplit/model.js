@@ -1,7 +1,7 @@
 // /modules/payments/refundPayments.js
 
 import { DataTypes } from 'sequelize';
-import sequelize from '../../db';
+import {sequelize} from '../../db.js';
 
 const CommissionSplit = sequelize.define('CommissionSplit', {
   id: {
@@ -24,6 +24,22 @@ const CommissionSplit = sequelize.define('CommissionSplit', {
     allowNull: true,
   },
   advisorSplitAmount: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  advisorName: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  advisorId: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  introducerName: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  introducerId: {
     type: DataTypes.FLOAT,
     allowNull: true,
   },

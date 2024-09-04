@@ -1,11 +1,11 @@
 import { Router } from 'express';
+import uploadController from './controller.js';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json('success');
-});
+router.get('/:id', uploadController.getSaleDataById);
+router.get('/', uploadController.getSaleData);
 
 // You can define more routes related to users here
 
-export default router;
+export default router

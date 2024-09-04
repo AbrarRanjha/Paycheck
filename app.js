@@ -6,12 +6,14 @@ import http from 'http';
 dotenv.config();
 import registerAllRoutes from './modules/routes.js';
 import { sequelize } from './db.js';
-
+import { bootstrap } from "./utils/bootstrap.js";
 var app = express();
 
 sequelize
   .sync({ force: false })
   .then(() => {
+    bootstrap();
+
     console.log('Database connected successfully!');
   })
   .catch(error => {

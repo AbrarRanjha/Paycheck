@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../db';
+import {sequelize} from '../../db.js';
 
 const SalesData = sequelize.define('SalesData', {
   id: {
@@ -9,8 +9,20 @@ const SalesData = sequelize.define('SalesData', {
     allowNull: false,
   },
   transactionID: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  employeeId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
+  },
+  employeeName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  clientName: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   saleAmount: {
     type: DataTypes.FLOAT,
@@ -20,16 +32,20 @@ const SalesData = sequelize.define('SalesData', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  paymentDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
   planType: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   commissionRate: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.STRING,
     allowNull: true,
   },
   grossCommission: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.STRING,
     allowNull: true,
   },
   paymentStatus: {
@@ -48,7 +64,7 @@ const SalesData = sequelize.define('SalesData', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  GrossFCI: {
+  grossFCI: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -72,7 +88,7 @@ const SalesData = sequelize.define('SalesData', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  paymentType: {
+  cashType: {
     type: DataTypes.STRING,
     allowNull: true,
   },

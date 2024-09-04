@@ -20,4 +20,5 @@ export const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USERNAME, DATABAS
 
 });
 
+
 console.log(sequelize.models);
