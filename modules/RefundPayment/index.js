@@ -1,4 +1,5 @@
-import { Router } from 'express';
+/* eslint-disable no-undef */
+const { Router } =require ('express');
 
 const router = Router();
 
@@ -8,4 +9,4 @@ router.get('/', (req, res) => {
 
 // You can define more routes related to users here
 
-export default router;
+module.exports = router;

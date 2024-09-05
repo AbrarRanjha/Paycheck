@@ -1,4 +1,4 @@
-import ErrorLogsService from './service.js';
+const ErrorLogsService =require ('./service.js');
 
 class ErrorLogsController {
   constructor() {}
@@ -17,7 +17,10 @@ class ErrorLogsController {
   }
   async getErrorLogs(req, res) {
     try {
-      const {limit,skip}=req.query      
+      const {limit,skip}=req.query    
+      if(!limit||!skip){
+        res.status(400).json({ error: 'Limit or skip is undefined' });
+      }  
       const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit,skip);
       if (ErrorLogs) {
         res.status(200).json(ErrorLogs);
@@ -30,5 +33,4 @@ class ErrorLogsController {
   }
 
 }
-
-export default new ErrorLogsController();
+module.exports =new ErrorLogsController();

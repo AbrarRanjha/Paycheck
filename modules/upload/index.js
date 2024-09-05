@@ -1,12 +1,12 @@
-import { Router } from 'express';
-import uploadController from './controller.js';
-import {upload} from '../../utils.js'
+/* eslint-disable no-undef */
+const { Router } = require('express');
+const uploadController = require('./controller.js');
+const { upload } = require('../../utils.js');
 
 const router = Router();
 
 router.get('/:id', uploadController.getUploadById);
 router.get('/', uploadController.getUploadAllFiles);
-router.post('/fileUpload',upload.single('file'), uploadController.uploadCSVFile);
+router.post('/fileUpload', upload.single('file'), uploadController.uploadCSVFile);
 
-
-export default router;
+module.exports = router;

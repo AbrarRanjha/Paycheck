@@ -1,4 +1,5 @@
-import EmployeeService from './service.js';
+/* eslint-disable no-undef */
+const EmployeeService= require ('./service.js');
 
 
 class EmployeeController {
@@ -155,4 +156,5 @@ class EmployeeController {
   }
 }
 
-export default new EmployeeController();
+module.exports = new EmployeeController();
+

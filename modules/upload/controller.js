@@ -1,5 +1,6 @@
-import xlsx from 'xlsx';
-import UploadService from './service.js';
+/* eslint-disable no-undef */
+const xlsx = require('xlsx');
+const UploadService = require('./service.js');
 
 class UploadController {
   constructor() {}
@@ -18,7 +19,6 @@ class UploadController {
   }
   async getUploadAllFiles(req, res) {
     try {
-      
       const Upload = await UploadService.getUploadData();
       if (Upload?.length) {
         res.status(200).json(Upload);
@@ -26,8 +26,8 @@ class UploadController {
         res.status(400).json({ error: 'Upload not found' });
       }
     } catch (error) {
-      console.log("error: " + error);
-      
+      console.log('error: ' + error);
+
       res.status(500).json({ error: error.message });
     }
   }
@@ -52,11 +52,10 @@ class UploadController {
         category
       );
       jsonData.forEach(async data => {
-
         // Validate and process each row of data here
         // if (this.validateData(data)) {
         const saleData = await UploadService.saveSaleData(data, uploadData?.id);
-        // const splitCommsion=await UploadService.calculateSplitCommsion(saleData?.id,data)
+        await UploadService.calculateSplitCommsion(saleData?.id, data);
         results.push(data);
         // } else {
         //     this.logError(data, 'Validation error');
@@ -102,4 +101,4 @@ class UploadController {
   // }
 }
 
-export default new UploadController();
+module.exports = new UploadController();

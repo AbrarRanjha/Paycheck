@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import uploadController from './controller.js';
+/* eslint-disable no-undef */
+const { Router } = require('express');
+const uploadController = require('./controller.js');
 
 const router = Router();
 
@@ -8,4 +9,4 @@ router.get('/', uploadController.getSaleData);
 
 // You can define more routes related to users here
 
-export default router
+module.exports = router;

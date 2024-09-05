@@ -1,11 +1,11 @@
 // modules/User/service.js
 
 /* eslint-disable no-undef */
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import Employee from './model.js';
-import { Op } from 'sequelize';
-import { sendOtpEmail } from '../../utils/utils.js';
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const Employee = require('./model.js');
+const { Op } = require('sequelize');
+const { sendOtpEmail } = require('../../utils/utils.js');
 
 class EmployeeService {
   async createEmployee(employeeData) {
@@ -119,4 +119,4 @@ class EmployeeService {
   }
 }
 
-export default new EmployeeService();
+module.exports = new EmployeeService();

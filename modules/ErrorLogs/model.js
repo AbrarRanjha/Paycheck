@@ -1,6 +1,6 @@
-import { DataTypes } from 'sequelize';
-import {sequelize} from '../../db.js';
-import SalesData from '../SaleData/model.js';
+const { DataTypes } =require ('sequelize');
+const {sequelize} =require ('../../db.js');
+const SalesData =require ('../SaleData/model.js');
 
 const ErrorLogs = sequelize.define('ErrorLogs', {
   id: {
@@ -34,4 +34,4 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
 });
 SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
 ErrorLogs.belongsTo(SalesData, { foreignKey: 'uploadId' });
-export default ErrorLogs;
+module.exports = ErrorLogs;

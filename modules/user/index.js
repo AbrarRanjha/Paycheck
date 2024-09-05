@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 
-import { Router } from 'express';
-import EmployeeController from './controller.js';
-import { upload } from '../../utils.js';
+const { Router } = require('express');
+const EmployeeController = require('./controller.js');
+const { upload } = require('../../utils.js');
 
 const router = Router();
 
@@ -14,4 +15,4 @@ router.post(`/forget-password`, EmployeeController.requestOTP);
 router.post(`/verify-otp`, EmployeeController.verifyOTP);
 router.post(`/set-password`, EmployeeController.resetPassword);
 
-export default router;
+module.exports = router

@@ -1,4 +1,5 @@
-import SaleDataService from './service.js';
+/* eslint-disable no-undef */
+const SaleDataService = require('./service.js');
 
 class SaleDataController {
   constructor() {}
@@ -17,8 +18,11 @@ class SaleDataController {
   }
   async getSaleData(req, res) {
     try {
-      const {limit,skip}=req.query      
-      const SaleData = await SaleDataService.getAllSaleData(limit,skip);
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
+        res.status(400).json({ error: 'Limit or skip is undefined' });
+      }
+      const SaleData = await SaleDataService.getAllSaleData(limit, skip);
       if (SaleData) {
         res.status(200).json(SaleData);
       } else {
@@ -28,7 +32,6 @@ class SaleDataController {
       res.status(500).json({ error: error.message });
     }
   }
-
 }
 
-export default new SaleDataController();
+module.exports = new SaleDataController();

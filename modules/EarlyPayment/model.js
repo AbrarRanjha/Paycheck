@@ -1,7 +1,8 @@
 // /modules/payments/earlyPayments.js
 
-import { DataTypes } from 'sequelize';
-import sequelize from '../../db';
+const { DataTypes } =require ('sequelize');
+const {sequelize} =require ('../../db.js');
+const Employee =require ('../User/model.js');
 
 const EarlyPayments = sequelize.define('EarlyPayments', {
   id: {
@@ -10,32 +11,48 @@ const EarlyPayments = sequelize.define('EarlyPayments', {
     autoIncrement: true,
     allowNull: false,
   },
-  managerID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  requestData: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  approvalStatus: {
+  employeeId: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
+  employeeName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  requestDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+
   reason: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
   requestPaymentAmount: {
     type: DataTypes.FLOAT,
-    allowNull: false,
+    allowNull: true,
   },
   note: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  status: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approveDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  rejectDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+
+ 
 }, {
   timestamps: true,
 });
-
-export default EarlyPayments;
+Employee.hasMany(EarlyPayments, { foreignKey: 'managerId' });
+EarlyPayments.belongsTo(Employee, { foreignKey: 'managerId' });
+module.exports =EarlyPayments;

@@ -1,11 +1,25 @@
-import { Router } from 'express';
+/* eslint-disable no-undef */
+
+const { Router } = require('express');
+const EarlyPaymentController = require('./controller.js');
+const {
+  authenticate,
+  adminAuthenticate,
+} = require('../../utils/middleware.js');
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json('success');
-});
+router.post(
+  '/request',
+  authenticate,
+  EarlyPaymentController.createEarlyPaymentRequest
+);
+router.post(
+  '/verifyByAdmin/:id',
+  adminAuthenticate,
+  EarlyPaymentController.approveOrRejectEarlyPaymentById
+);
+router.get('/:id', EarlyPaymentController.getEarlyPaymentById);
+router.get('/', EarlyPaymentController.getEarlyPayment);
 
-// You can define more routes related to users here
-
-export default router;
+module.exports = router;

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to,
@@ -29,3 +29,6 @@ export const sendEmail = async (to, subject, html) => {
     throw new Error('Error sending email');
   }
 };
+
+// Export the sendEmail function
+module.exports = { sendEmail };

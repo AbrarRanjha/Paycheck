@@ -1,6 +1,7 @@
-import SalesData from '../SaleData/model.js';
-import CommissionSplit from '../CommissionSplit/model.js';
-import Upload from './model.js';
+/* eslint-disable no-undef */
+const SalesData = require ('../SaleData/model.js');
+const CommissionSplit = require ('../CommissionSplit/model.js');
+const Upload = require ('./model.js');
 class uploadService {
   async getUploadById(id) {
     try {
@@ -50,17 +51,20 @@ class uploadService {
   }
   async calculateSplitCommsion(saleDataID, data) {
     try {
+      console.log("saleDataID: " + saleDataID);
+      
       const splitData = {
-        saleDataID,
+        saleDataId:saleDataID,
         advisorId: data?.CRMContactId,
         advisorName: data?.SellingAdviserName,
-        // introducerId: data?.CRMContactId,
-        introducerName: data?.SellingAdviserName,
-        employeeSplitPercentage: '',
-        employeeSplitAmount: '',
         advisorSplitPercentage: data?.PercentagePayable,
-        advisorSplitAmount: '',
-        comments: '',
+        advisorSplitAmount: data?.Payable,
+        introducerId: "",
+        introducerName: "",
+        introduceSplitPercentage: 0,
+        introduceSplitAmount: 0,
+        clientId: "",
+        clientName: "",
       };
       const upload = await CommissionSplit.create(splitData);
       return upload;
@@ -102,4 +106,4 @@ class uploadService {
   }
 }
 
-export default new uploadService();
+module.exports = new uploadService();
