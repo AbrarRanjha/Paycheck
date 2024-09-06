@@ -110,6 +110,7 @@ class EmployeeService {
       }
       user.resetToken = null;
       user.resetTokenExpiry = null;
+      user.isVerified = true
       await user.save();
       return true;
     } catch (error) {

@@ -50,6 +50,10 @@ const Employee = sequelize.define(
     resetTokenExpiry: {
       type: DataTypes.DATE,
     },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     notificationList: {
       type: DataTypes.JSON,
     },

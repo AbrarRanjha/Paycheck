@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const Employee = require('../modules/user/model.js');
+const Employee = require('../modules/User/model.js');
 async function bootstrap() {
   const Users = await Employee.findAll();
   if (!Users.length) {

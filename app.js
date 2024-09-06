@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api', registerAllRoutes);
-app.get('/', (req, res) => res.json(`Hello it's working`));
+app.get('/api/', (req, res) => res.json(`Hello it's working`));
 const server = http.createServer(app);
 
 module.exports = server;

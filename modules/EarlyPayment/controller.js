@@ -11,6 +11,7 @@ class EarlyPaymentController {
         totalCommission,
         reason,
         requestPaymentAmount,
+        requestDate
       } = req.body;
 
       const employee = await EarlyPaymentService.createEarlyPayment({
@@ -19,7 +20,7 @@ class EarlyPaymentController {
         totalCommission,
         reason,
         requestPaymentAmount,
-        requestDate: Date.now(),
+        requestDate: requestDate,
         status: 'pending',
         managerId: req?.user?.id,
       });

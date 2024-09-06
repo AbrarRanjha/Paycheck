@@ -1,20 +1,12 @@
 // Setup associations in db.js or a dedicated associations file
 
-import EarlyPayments from "../EarlyPayment/model";
 import EmployeeReports from "../EmployeeReports/model";
 import Payout from "../Payouts/model";
-import RefundPayments from "../RefundPayment/model";
 import SalesData from "../SaleData/model";
-import Employee from "../user/model";
+import Employee from "../User/model";
 
 Employee.hasMany(SalesData, { foreignKey: 'EmployeeID' });
 SalesData.belongsTo(Employee, { foreignKey: 'EmployeeID' });
-
-Employee.hasMany(EarlyPayments, { foreignKey: 'EmployeeID' });
-EarlyPayments.belongsTo(Employee, { foreignKey: 'EmployeeID' });
-
-Employee.hasMany(RefundPayments, { foreignKey: 'EmployeeID' });
-RefundPayments.belongsTo(Employee, { foreignKey: 'EmployeeID' });
 
 Employee.hasMany(Payout, { foreignKey: 'EmployeeID' });
 Payout.belongsTo(Employee, { foreignKey: 'EmployeeID' });
