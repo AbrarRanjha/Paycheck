@@ -4,8 +4,8 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js'); // Assuming db.js exports an initialized Sequelize instance
 
-const Employee = sequelize.define(
-  'Employee',
+const User = sequelize.define(
+  'User',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -63,4 +63,4 @@ const Employee = sequelize.define(
   }
 );
 
-module.exports = Employee;
+module.exports = User;

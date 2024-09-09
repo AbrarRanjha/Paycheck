@@ -1,11 +1,12 @@
-const CommissionSplitService =require ('./service.js');
+const CommissionSplitService = require('./service.js');
 
 class CommissionSplitController {
   constructor() {}
   async getCommissionSplitById(req, res) {
     try {
       const id = req.params.id;
-      const CommissionSplit = await CommissionSplitService.getCommissionSplitById(id);
+      const CommissionSplit =
+        await CommissionSplitService.getCommissionSplitById(id);
       if (CommissionSplit) {
         res.status(200).json(CommissionSplit);
       } else {
@@ -17,21 +18,40 @@ class CommissionSplitController {
   }
   async getCommissionSplit(req, res) {
     try {
-      const {limit,skip}=req.query  
-      if(!limit||!skip){
-        res.status(400).json({ error: 'Limit or skip is undefined' });
-      }    
-      const CommissionSplit = await CommissionSplitService.getAllCommissionSplit(limit,skip);
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
+        return res.status(400).json({ error: 'Limit or skip is undefined' });
+      }
+      const CommissionSplit =
+        await CommissionSplitService.getAllCommissionSplit(limit, skip);
       if (CommissionSplit) {
-        res.status(200).json(CommissionSplit);
+        return res.status(200).json(CommissionSplit);
       } else {
-        res.status(404).json({ error: 'CommissionSplit not found' });
+        return res.status(404).json({ error: 'CommissionSplit not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   }
-
+  async updateCommissionSplit(req, res) {
+    try {
+      console.log("updateCommissionSplit");
+      
+      const id = req.params.id;
+      const data = req.body;
+      const CommissionSplit =
+        await CommissionSplitService.updateCommissionSplitById(id, data);
+      if (CommissionSplit) {
+        return res.status(200).json(CommissionSplit);
+      } else {
+        return res.status(404).json({ error: 'CommissionSplit not found' });
+      }
+    } catch (error) {
+      console.log("error: " + error);
+      
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
-module.exports = new CommissionSplitController()
+module.exports = new CommissionSplitController();

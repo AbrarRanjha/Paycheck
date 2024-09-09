@@ -31,6 +31,7 @@ class UploadController {
       res.status(500).json({ error: error.message });
     }
   }
+ 
   async uploadCSVFile(req, res) {
     try {
       const file = req.file;
@@ -52,6 +53,8 @@ class UploadController {
         category
       );
       jsonData.forEach(async data => {
+        console.log("data: " + JSON.stringify(data));
+        
         // Validate and process each row of data here
         // if (this.validateData(data)) {
         const saleData = await UploadService.saveSaleData(data, uploadData?.id);

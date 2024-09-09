@@ -14,6 +14,10 @@ const CommissionSplit = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
+    transactionID: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     advisorId: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -23,6 +27,10 @@ const CommissionSplit = sequelize.define(
       allowNull: true,
     },
     advisorSplitPercentage: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    grossValue: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
