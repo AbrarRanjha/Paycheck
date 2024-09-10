@@ -1,4 +1,4 @@
-const PayoutService =require ('./service.js');
+const PayoutService = require('./service.js');
 
 class PayoutController {
   constructor() {}
@@ -17,11 +17,11 @@ class PayoutController {
   }
   async getPayout(req, res) {
     try {
-      const {limit,skip}=req.query  
-      if(!limit||!skip){
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
         res.status(400).json({ error: 'Limit or skip is undefined' });
-      }    
-      const Payout = await PayoutService.getAllPayout(limit,skip);
+      }
+      const Payout = await PayoutService.getAllPayout(limit, skip);
       if (Payout) {
         res.status(200).json(Payout);
       } else {
@@ -31,7 +31,19 @@ class PayoutController {
       res.status(500).json({ error: error.message });
     }
   }
+  async updatePayout(req, res) {
+    try {
+      console.log('updatePayout');
+      const id = req.params.id;
+      const data = req.body;
+      const Payout = await PayoutService.updatePayoutById(id, data);
+      return res.status(200).json(Payout);
+    } catch (error) {
+      console.log('error: ' + error);
 
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
-module.exports=new PayoutController();
+module.exports = new PayoutController();

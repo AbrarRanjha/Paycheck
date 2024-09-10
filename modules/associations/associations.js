@@ -5,8 +5,6 @@ import Payout from "../Payouts/model";
 import SalesData from "../SaleData/model";
 import Employee from "../User/model";
 
-Employee.hasMany(SalesData, { foreignKey: 'EmployeeID' });
-SalesData.belongsTo(Employee, { foreignKey: 'EmployeeID' });
 
 Employee.hasMany(Payout, { foreignKey: 'EmployeeID' });
 Payout.belongsTo(Employee, { foreignKey: 'EmployeeID' });

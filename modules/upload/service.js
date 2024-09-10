@@ -74,6 +74,7 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+ 
   parseExcelDate(excelDate) {
     const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
     return date.toLocaleString();

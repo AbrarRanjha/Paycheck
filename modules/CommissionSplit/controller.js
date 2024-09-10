@@ -35,20 +35,14 @@ class CommissionSplitController {
   }
   async updateCommissionSplit(req, res) {
     try {
-      console.log("updateCommissionSplit");
-      
+      console.log('updateCommissionSplit');
       const id = req.params.id;
       const data = req.body;
       const CommissionSplit =
         await CommissionSplitService.updateCommissionSplitById(id, data);
-      if (CommissionSplit) {
-        return res.status(200).json(CommissionSplit);
-      } else {
-        return res.status(404).json({ error: 'CommissionSplit not found' });
-      }
+      return res.status(200).json(CommissionSplit);
     } catch (error) {
-      console.log("error: " + error);
-      
+      console.log('error: ' + error);
       res.status(500).json({ error: error.message });
     }
   }

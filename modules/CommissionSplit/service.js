@@ -36,10 +36,16 @@ class commissionSplitService {
         }
       }
       if (
-        data.introducerSplitPercentage &&
+        typeof data.introducerSplitPercentage !== 'undefined' &&
         data.introducerSplitPercentage !==
           commissionRecord.introducerSplitPercentage
       ) {
+        if (data.introducerSplitPercentage == 0) {
+          console.log('advisorSplitPercentage');
+
+          commissionRecord.introducerSplitPercentage = 0;
+          commissionRecord.introducerSplitAmount = 0;
+        }
         commissionRecord.introducerSplitPercentage =
           data.introducerSplitPercentage;
         const grossValue = commissionRecord.grossValue || 0; // Replace with actual field

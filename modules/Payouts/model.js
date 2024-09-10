@@ -10,12 +10,11 @@ const Payout = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-
-    employeeId: {
+    advisorId: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    employeeName: {
+    advisorName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
