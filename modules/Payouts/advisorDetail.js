@@ -5,8 +5,8 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
 const SalesData = require('../SaleData/model.js');
 
-const CommissionSplit = sequelize.define(
-  'CommissionSplit',
+const AdvisorDetail = sequelize.define(
+  'AdvisorDetail',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -14,61 +14,48 @@ const CommissionSplit = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-    transactionID: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    advisorId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    advisorName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-   splitPercentage: {
+    advisorSplit: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    splitAmount: {
+    payAways: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    advisorBalance: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+   loanRepayment: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    deduction: {
        type: DataTypes.FLOAT,
        allowNull: true,
      },
-    grossFCI: {
+    expenses: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    FCIRecognition: {
+    advances: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    splitType: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    frequency: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    premium: {
+    finalAmount: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    splitPartnerId: {
-      type: DataTypes.STRING,
+    datePaid: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
-    splitPartnerName: {
-      type: DataTypes.STRING,
+    amountPaid: {
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
- 
-    // clientId: {
-    //   type: DataTypes.STRING,
-    //   allowNull: true,
-    // },
-    clientName: {
-      type: DataTypes.STRING,
+    advisorSplit: {
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
   },
@@ -76,6 +63,6 @@ const CommissionSplit = sequelize.define(
     timestamps: true,
   }
 );
-SalesData.hasOne(CommissionSplit, { foreignKey: 'saleDataId' });
+SalesData.hasOne(AdvisorDetail, { foreignKey: 'comm' });
 CommissionSplit.belongsTo(SalesData, { foreignKey: 'saleDataId' });
-module.exports = CommissionSplit;
+module.exports = AdvisorDetail;

@@ -2,7 +2,7 @@ const { DataTypes } =require ('sequelize');
 const {sequelize} =require ('../../db.js');
 const SalesData =require ('../SaleData/model.js');
 
-const ErrorLogs = sequelize.define('ErrorLogs', {
+const Validation = sequelize.define('Validation', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -48,6 +48,6 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
 }, {
   timestamps: true,
 });
-SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
-ErrorLogs.belongsTo(SalesData, { foreignKey: 'uploadId' });
-module.exports = ErrorLogs;
+SalesData.hasMany(Validation, { foreignKey: 'saleDataId' });
+Validation.belongsTo(SalesData, { foreignKey: 'uploadId' });
+module.exports = Validation;

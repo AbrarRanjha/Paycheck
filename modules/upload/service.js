@@ -49,32 +49,40 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
-  async calculateSplitCommsion(saleDataID, data) {
+  async calculateSplitCommission(saleDataID, data) {
     try {
-      console.log('saleDataID: ' + saleDataID);
-
+      console.log(`saleDataID: ${saleDataID}`);
+      const splitPercentage = 100 - data?.PercentagePayable;
+      const splitAmount = Math.round((data?.GrossFCI * splitPercentage) / 100 * 100) / 100;
+      const isAdviser = data?.RecipientType === 'Adviser';
       const splitData = {
         transactionID: data?.IORef,
         saleDataId: saleDataID,
-        advisorId: data?.CRMContactId,
-        advisorName: data?.SellingAdviserName,
-        advisorSplitPercentage: data?.PercentagePayable,
-        advisorSplitAmount: data?.Payable,
-        introducerId: '',
-        introducerName: '',
-        grossValue:data?.GrossFCI,
-        introduceSplitPercentage: 0,
-        introduceSplitAmount: 0,
-        clientId: '',
+        splitPercentage: splitPercentage,
+        splitAmount: splitAmount,
+        grossFCI: data?.GrossFCI,
+        premium: data?.Premium,
+        frequency: data?.Frequency,
+        FCIRecognition: data?.FCIRecognition,
+        splitType: data?.RecipientType,
         clientName: data?.ClientName,
+        ...(isAdviser
+          ? {
+              advisorId: data?.CRMContactId,
+              advisorName: data?.SellingAdviserName,
+            }
+          : {
+              splitPartnerId: data?.CRMContactId,
+              splitPartnerName: data?.SellingAdviserName,
+            }),
       };
-      const upload = await CommissionSplit.create(splitData);
-      return upload;
+
+      return await CommissionSplit.create(splitData);
     } catch (error) {
-      throw new Error('Failed to get upload: ' + error.message);
+      throw new Error(`Failed to get upload: ${error.message}`);
     }
   }
- 
+
   parseExcelDate(excelDate) {
     const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
     return date.toLocaleString();
@@ -96,24 +104,25 @@ class uploadService {
       }
       const saleData = {
         transactionID: data?.IORef,
-        startDate: data?.StartDate,
         clientName: data?.ClientName,
-        saleAmount: data?.Premium,
-        commissionRate: data?.CommissionRate,
-        grossCommission: '',
+        // commissionRate: data?.CommissionRate,
         employeeId: data?.CRMContactId,
         employeeName: data?.SellingAdviserName,
         paymentDate: paymentDate,
-        service: data?.PlanType,
         grossFCI: data?.GrossFCI,
         FCIRecognition: data?.FCIRecognition,
         cashType: data?.CashType,
+        planType: data?.PlanType,
         payable: data?.Payable,
-        incomeType: data?.IncomeType,
+        percetagePayable: data?.PercentagePayable,
+        cashType: data?.CashType,
+        cashMatchId: data?.CashMatchId,
+        premium: data?.Premium,
+        frequency: data?.Frequency,
+        plzNumber: data?.PlZnNumber,
         provider: data?.Provider,
-        paymentStatus: data?.Submitted,
-        comments: '',
-        submittedPremium: submitted,
+        startDate: data?.StartDate,
+        endDate: data?.EndDate,
         uploadId,
       };
       const saleDataRes = await SalesData.create(saleData);
