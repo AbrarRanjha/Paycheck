@@ -54,10 +54,15 @@ class UploadController {
       );
       jsonData.forEach(async data => {
         console.log('data: ' + JSON.stringify(data));
-
-        const saleData = await UploadService.saveSaleData(data, uploadData?.id);
-        await UploadService.calculateSplitCommission(saleData?.id, data);
-        results.push(data);
+        if (data?.IORef) {
+          const saleData = await UploadService.saveSaleData(
+            data,
+            uploadData?.id
+          );
+          await UploadService.calculateSplitCommission(saleData?.id, data);
+          await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          results.push(data);
+        }
       });
 
       res

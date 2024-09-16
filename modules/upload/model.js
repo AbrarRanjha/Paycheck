@@ -3,8 +3,6 @@
 
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
-const SalesData = require('../SaleData/model.js');
-
 const Upload = sequelize.define(
   'Upload',
   {
@@ -39,7 +37,4 @@ const Upload = sequelize.define(
     timestamps: true,
   }
 );
-
-Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
-SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });
 module.exports = Upload;

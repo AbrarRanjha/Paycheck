@@ -9,7 +9,11 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     autoIncrement: true,
     allowNull: false,
   },
-  errrorDescription: {
+  transactionID: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  errorDescription: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -18,8 +22,9 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     allowNull: true,
   },
   status: {
-    type: DataTypes.STRING,
+    type: DataTypes.BOOLEAN,
     allowNull: true,
+    defaultValue:true
   },
   comment: {
     type: DataTypes.DATE,
@@ -29,25 +34,9 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  grossFCI: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-  FCIRecognition: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-  payable: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-  percetagePayable: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
 }, {
   timestamps: true,
 });
 SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
-ErrorLogs.belongsTo(SalesData, { foreignKey: 'uploadId' });
+ErrorLogs.belongsTo(SalesData, { foreignKey: 'saleDataId' });
 module.exports = ErrorLogs;

@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
+const Upload = require('../Upload/model.js');
 
 const SalesData = sequelize.define(
   'SalesData',
@@ -72,7 +73,7 @@ const SalesData = sequelize.define(
       allowNull: true,
     },
     cashMatchId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   },
@@ -80,5 +81,6 @@ const SalesData = sequelize.define(
     timestamps: true,
   }
 );
-
 module.exports = SalesData;
+Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
+SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });
