@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const RefundPaymentModel =require ('./model.js');
 class RefundPaymentModelService {
   async getRefundPaymentById(id) {
@@ -8,10 +9,15 @@ class RefundPaymentModelService {
       throw new Error('Failed to get RefundPaymentModel: ' + error.message);
     }
   }
-  async getEmployeeHistory(id) {
+  async getEmployeeHistory(employeeId,excludeId) {
     try {
-      const res = await RefundPaymentModel.findOne({
-        where: { employeeId: id },
+      const res = await RefundPaymentModel.findAll({
+        where: {
+          employeeId: employeeId,
+          id: {
+            [Op.ne]: excludeId, 
+          },
+        },
       });
       return res;
     } catch (error) {

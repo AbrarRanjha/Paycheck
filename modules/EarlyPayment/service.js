@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const EarlyPaymentModel =require ('./model.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {
@@ -8,16 +9,22 @@ class EarlyPaymentModelService {
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
-  async getEmployeeHistory(id) {
+  async getEmployeeHistory(employeeId, excludeId) {
     try {
-      const res = await EarlyPaymentModel.findOne({
-        where: { employeeId: id },
+      const res = await EarlyPaymentModel.findAll({
+        where: {
+          employeeId: employeeId,
+          id: {
+            [Op.ne]: excludeId, 
+          },
+        },
       });
       return res;
     } catch (error) {
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
+  
   async updateByAdmin(id, data) {
     try {
       if (data?.status == 'Approved') {
