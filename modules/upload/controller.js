@@ -60,6 +60,7 @@ class UploadController {
             uploadData?.id
           );
           await UploadService.calculateSplitCommission(saleData?.id, data);
+          await UploadService.calculateAdvisorPayout(saleData?.id, data);
           await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
           results.push(data);
         }

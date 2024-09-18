@@ -7,9 +7,9 @@ class ErrorLogsController {
       const id = req.params.id;
       const ErrorLogs = await ErrorLogsService.getErrorLogsById(id);
       if (ErrorLogs) {
-        res.status(200).json(ErrorLogs);
+       return res.status(200).json(ErrorLogs);
       } else {
-        res.status(404).json({ error: 'ErrorLogs not found' });
+       return  res.status(404).json({ error: 'ErrorLogs not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -19,13 +19,13 @@ class ErrorLogsController {
     try {
       const {limit,skip}=req.query    
       if(!limit||!skip){
-        res.status(400).json({ error: 'Limit or skip is undefined' });
+       return res.status(400).json({ error: 'Limit or skip is undefined' });
       }  
       const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit,skip);
       if (ErrorLogs) {
-        res.status(200).json(ErrorLogs);
+      return  res.status(200).json(ErrorLogs);
       } else {
-        res.status(404).json({ error: 'ErrorLogs not found' });
+       return res.status(404).json({ error: 'ErrorLogs not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -3,6 +3,7 @@ const SalesData = require('../SaleData/model.js');
 const CommissionSplit = require('../CommissionSplit/model.js');
 const Upload = require('./model.js');
 const ErrorLogs = require('../ErrorLogs/model.js');
+const Payout = require('../Payouts/model.js');
 class uploadService {
   async getUploadById(id) {
     try {
@@ -54,7 +55,8 @@ class uploadService {
     try {
       console.log(`saleDataID: ${saleDataID}`);
       const splitPercentage = 100 - data?.PercentagePayable;
-      const splitAmount = Math.round((data?.GrossFCI * splitPercentage) / 100 * 100) / 100;
+      const splitAmount =
+        Math.round(((data?.GrossFCI * splitPercentage) / 100) * 100) / 100;
       const isAdviser = data?.RecipientType === 'Adviser';
       const splitData = {
         transactionID: data?.IORef,
@@ -73,7 +75,7 @@ class uploadService {
               advisorName: data?.SellingAdviserName,
             }
           : {
-              splitPartnerId: data?.CRMContactId,
+              splitPartnerId: "",
               splitPartnerName: data?.SellingAdviserName,
             }),
       };
@@ -83,10 +85,63 @@ class uploadService {
       throw new Error(`Failed to get upload: ${error.message}`);
     }
   }
+  async calculateAdvisorPayout(saleDataID, data) {
+    try {
+      console.log(`saleDataID: ${saleDataID}`);
+
+      // Find the existing advisor payout entry
+      const advisor = await Payout.findOne({
+        where: { advisorId: data?.CRMContactId },
+      });
+
+      // Calculate necessary amounts
+      const splitPercentage = 100 - data?.PercentagePayable;
+      const splitAmount =
+        Math.round(((data?.GrossFCI * splitPercentage) / 100) * 100) / 100;
+      const totalDeduction = 0; // temporary value
+      const margin = 0; // temporary value
+      const netPayout = data?.GrossFCI - totalDeduction;
+
+      if (advisor) {
+        const totalGrossFCI = advisor.totalGrossFCI + data?.GrossFCI;
+        const totalAdvisorSplit = advisor.totalAdvisorSplit + splitAmount;
+
+        await Payout.update(
+          {
+            totalAdvisorSplit,
+            totalGrossFCI,
+            netPayout,
+            totalDeduction,
+            margin,
+          },
+          { where: { advisorId: data?.CRMContactId } }
+        );
+
+        return { message: 'Payout updated successfully' };
+      } else {
+        const payoutData = {
+          transactionID: data?.IORef,
+          saleDataId: saleDataID,
+          advisorId: data?.CRMContactId,
+          advisorName: data?.SellingAdviserName,
+          totalGrossFCI: data?.GrossFCI,
+          totalAdvisorSplit: splitAmount,
+          totalDeduction: totalDeduction,
+          netPayout: netPayout,
+          margin: margin,
+        };
+        await Payout.create(payoutData);
+        return { message: 'Payout created successfully' };
+      }
+    } catch (error) {
+      throw new Error(`Failed to process payout: ${error.message}`);
+    }
+  }
+
   async SaveErrorlogsAndValidation(saleDataID, data) {
     const errors = [];
     const errorLocation = 'CommisonData';
-  
+
     // Validate transactionID
     if (typeof data.IORef !== 'string') {
       errors.push({
@@ -95,7 +150,7 @@ class uploadService {
         errorLocation: `${errorLocation}.transactionID`,
       });
     }
-  
+
     // Validate clientName
     if (!data?.ClientName || typeof data.ClientName !== 'string') {
       errors.push({
@@ -104,7 +159,7 @@ class uploadService {
         errorLocation: `${errorLocation}.clientName`,
       });
     }
-  
+
     // Validate startDate
     if (!data?.StartDate || isNaN(new Date(data.StartDate))) {
       errors.push({
@@ -120,7 +175,7 @@ class uploadService {
         errorLocation: `${errorLocation}.endDate`,
       });
     }
-  
+
     // Validate endDate
     if (data?.EndDate && isNaN(new Date(data.EndDate))) {
       errors.push({
@@ -129,7 +184,7 @@ class uploadService {
         errorLocation: `${errorLocation}.endDate`,
       });
     }
-  
+
     // Validate paymentDate
     if (!data?.PaymentDate || isNaN(new Date(data.PaymentDate))) {
       errors.push({
@@ -138,7 +193,7 @@ class uploadService {
         errorLocation: `${errorLocation}.paymentDate`,
       });
     }
-  
+
     // Validate planType
     if (!data?.PlanType || typeof data.PlanType !== 'string') {
       errors.push({
@@ -147,7 +202,7 @@ class uploadService {
         errorLocation: `${errorLocation}.planType`,
       });
     }
-  
+
     // Validate plzNumber
     if (!data?.PlZnNumber) {
       errors.push({
@@ -156,7 +211,7 @@ class uploadService {
         errorLocation: `${errorLocation}.plzNumber`,
       });
     }
-  
+
     // Validate frequency
     if (!data?.Frequency || typeof data.Frequency !== 'string') {
       errors.push({
@@ -165,7 +220,7 @@ class uploadService {
         errorLocation: `${errorLocation}.frequency`,
       });
     }
-  
+
     // Validate grossFCI
     if (!data?.GrossFCI || typeof data.GrossFCI !== 'number') {
       errors.push({
@@ -174,7 +229,7 @@ class uploadService {
         errorLocation: `${errorLocation}.grossFCI`,
       });
     }
-  
+
     // Validate FCIRecognition
     if (typeof data?.FCIRecognition !== 'number') {
       errors.push({
@@ -183,7 +238,7 @@ class uploadService {
         errorLocation: `${errorLocation}.FCIRecognition`,
       });
     }
-  
+
     // Validate provider
     if (!data?.Provider || typeof data.Provider !== 'string') {
       errors.push({
@@ -192,7 +247,7 @@ class uploadService {
         errorLocation: `${errorLocation}.provider`,
       });
     }
-  
+
     // Validate premium
     if (typeof data?.Premium !== 'number') {
       errors.push({
@@ -201,7 +256,7 @@ class uploadService {
         errorLocation: `${errorLocation}.premium`,
       });
     }
-  
+
     // Validate payable
     if (typeof data?.Payable !== 'number') {
       errors.push({
@@ -210,7 +265,7 @@ class uploadService {
         errorLocation: `${errorLocation}.payable`,
       });
     }
-  
+
     // Validate percentagePayable
     if (typeof data?.PercentagePayable !== 'number') {
       errors.push({
@@ -219,7 +274,7 @@ class uploadService {
         errorLocation: `${errorLocation}.percentagePayable`,
       });
     }
-  
+
     // Validate cashType
     if (data?.CashType && typeof data.CashType !== 'string') {
       errors.push({
@@ -228,7 +283,7 @@ class uploadService {
         errorLocation: `${errorLocation}.cashType`,
       });
     }
-  
+
     // Validate cashMatchId
     if (data?.CashMatchId && typeof data.CashMatchId !== 'number') {
       errors.push({
@@ -237,7 +292,7 @@ class uploadService {
         errorLocation: `${errorLocation}.cashMatchId`,
       });
     }
-  
+
     // Log the errors to ErrorLogs table
     for (let error of errors) {
       await ErrorLogs.create({
@@ -249,15 +304,13 @@ class uploadService {
         status: false, // Mark as unresolved
       });
     }
-  
+
     if (errors.length === 0) {
       return true;
     }
-  
+
     return false;
   }
-  
-  
 
   parseExcelDate(excelDate) {
     const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
@@ -281,9 +334,7 @@ class uploadService {
       const saleData = {
         transactionID: data?.IORef,
         clientName: data?.ClientName,
-        // commissionRate: data?.CommissionRate,
-        employeeId: data?.CRMContactId,
-        employeeName: data?.SellingAdviserName,
+        // commissionRate: data?.CommissionRate
         paymentDate: paymentDate,
         grossFCI: data?.GrossFCI,
         FCIRecognition: data?.FCIRecognition,

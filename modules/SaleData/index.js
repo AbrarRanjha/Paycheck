@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/:id', uploadController.getSaleDataById);
 router.get('/', uploadController.getSaleData);
+router.put('/:id', uploadController.updateSaleDataById);
 
 // You can define more routes related to users here
 
