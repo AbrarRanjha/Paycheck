@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
-import dotenv from 'dotenv';
-import express from 'express';
-import cors from 'cors';
-import http from 'http';
+const dotenv = require('dotenv');
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
 dotenv.config();
-import registerAllRoutes from './modules/routes.js';
-import { sequelize } from './db.js';
-import { bootstrap } from "./utils/bootstrap.js";
+const registerAllRoutes = require('./modules/routes.js');
+const { sequelize } = require('./db.js');
+const { bootstrap } = require('./utils/bootstrap.js');
 var app = express();
 
 sequelize
@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api', registerAllRoutes);
-app.get('/', (req, res) => res.json(`Hello it's working`));
+app.get('/api/', (req, res) => res.json(`Hello it's working`));
 const server = http.createServer(app);
 
-export default server;
+module.exports = server;

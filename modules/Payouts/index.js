@@ -1,11 +1,10 @@
-import { Router } from 'express';
+const { Router } =require ('express');
+const PayoutController =require ('./controller.js');
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json('success');
-});
+router.get('/:id', PayoutController.getPayoutById);
+router.get('/', PayoutController.getPayout);
+router.put('/updateCommission/:id', PayoutController.updatePayout);
 
-// You can define more routes related to users here
-
-export default router;
+module.exports = router;

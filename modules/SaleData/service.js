@@ -1,4 +1,5 @@
-import saleData from './model.js';
+/* eslint-disable no-undef */
+const saleData = require('./model.js');
 class saleDataService {
   async getSaleDataById(id) {
     try {
@@ -12,7 +13,7 @@ class saleDataService {
     try {
       limit = parseInt(limit, 10);
       skip = parseInt(skip, 10);
-      console.log('limit: ' +  limit, skip);
+      console.log('limit: ' + limit, skip);
 
       const res = await saleData.findAll({
         limit: limit,
@@ -27,4 +28,4 @@ class saleDataService {
   }
 }
 
-export default new saleDataService();
+module.exports = new saleDataService();

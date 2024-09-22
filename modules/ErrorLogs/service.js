@@ -1,4 +1,4 @@
-import errorLogs from './model.js';
+const errorLogs =require ('./model.js');
 class errorLogsService {
   async getErrorLogsById(id) {
     try {
@@ -27,4 +27,4 @@ class errorLogsService {
   }
 }
 
-export default new errorLogsService();
+module.exports =new errorLogsService()

@@ -1,10 +1,9 @@
-import multer from 'multer';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import path from 'path';
+/* eslint-disable no-undef */
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// __filename and __dirname are automatically available in CommonJS
 const uploadDir = path.join(__dirname, 'public/uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -23,4 +22,8 @@ const storage = multer.diskStorage({
     );
   },
 });
-export const upload = multer({ storage: storage });
+
+const upload = multer({ storage: storage });
+
+// Export the upload instance
+module.exports = { upload };

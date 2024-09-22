@@ -1,11 +1,25 @@
-import { Router } from 'express';
+/* eslint-disable no-undef */
+
+const { Router } = require('express');
+const RefundPaymentController = require('./controller.js');
+const {
+  authenticate,
+  adminAuthenticate,
+} = require('../../utils/middleware.js');
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json('success');
-});
+router.post(
+  '/request',
+  authenticate,
+  RefundPaymentController.createRefundPaymentRequest
+);
+router.post(
+  '/verifyByAdmin/:id',
+  adminAuthenticate,
+  RefundPaymentController.approveOrRejectRefundPaymentById
+);
+router.get('/:id', RefundPaymentController.getRefundPaymentById);
+router.get('/', RefundPaymentController.getRefundPayment);
 
-// You can define more routes related to users here
-
-export default router;
+module.exports = router;

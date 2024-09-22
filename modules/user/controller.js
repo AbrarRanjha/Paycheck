@@ -1,5 +1,5 @@
-import EmployeeService from './service.js';
-
+/* eslint-disable no-undef */
+const EmployeeService = require('./service.js');
 
 class EmployeeController {
   constructor() {}
@@ -10,7 +10,6 @@ class EmployeeController {
         req.body;
       const isExist = await EmployeeService.getUserByEmail(email);
       console.log('isExist', isExist);
-
       if (isExist) {
         return res.status(400).json({ message: 'Email already exists' });
       }
@@ -24,7 +23,8 @@ class EmployeeController {
         address,
         role,
       });
-      res
+      await EmployeeService.generateOtp(email);
+      return res
         .status(201)
         .json({ message: 'register successfully', data: employee });
     } catch (error) {
@@ -38,6 +38,9 @@ class EmployeeController {
       const user = await EmployeeService.getUserByEmail(email);
       if (!user) {
         return res.status(400).json({ message: 'invalid Creditionals' });
+      }
+      if (!user?.isVerified) {
+        return res.status(400).json({ message: 'Your email is not verified' });
       }
       const isMatch = await EmployeeService.validatePassword(password, user);
       if (!isMatch) {
@@ -102,9 +105,9 @@ class EmployeeController {
       const { email, otp } = req.body;
       const isVerified = await EmployeeService.verifyOtp(email, otp);
       if (isVerified) {
-       return res.status(200).send({ message: 'OTP verified', data: email });
+        return res.status(200).send({ message: 'OTP verified', data: email });
       } else {
-         return res.status(400).send({ message: 'Invalid or expired OTP' });
+        return res.status(400).send({ message: 'Invalid or expired OTP' });
       }
     } catch (error) {
       console.log('error', error);
@@ -155,4 +158,4 @@ class EmployeeController {
   }
 }
 
-export default new EmployeeController();
+module.exports = new EmployeeController();

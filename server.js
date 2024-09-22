@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-import server from "./app.js";
+const server = require('./app.js');
 const { NODE_ENV, PORT } = process.env;
-if(NODE_ENV=="development"){
+if (NODE_ENV == 'development') {
   const host = 'localhost';
   server.listen({ host: host, port: PORT }, err => {
     if (err) {
@@ -10,9 +10,6 @@ if(NODE_ENV=="development"){
     }
     console.log(`Server listening on ${PORT}`);
   });
-}else{
+} else {
   server.listen();
 }
-
-
-
