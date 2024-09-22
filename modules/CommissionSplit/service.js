@@ -21,6 +21,7 @@ class commissionSplitService {
           if (data.splitPercentage == 0) {
             commissionRecord.splitPercentage = 0;
             commissionRecord.splitAmount = 0;
+            
           } else {
             commissionRecord.splitPercentage = data.splitPercentage;
             const grossValue = commissionRecord.grossFCI || 0; // Ensure grossValue is defined

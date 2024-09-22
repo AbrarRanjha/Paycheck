@@ -64,7 +64,7 @@ const SalesData = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    percetagePayable: {
+    percentagePayable: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },

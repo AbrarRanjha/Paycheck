@@ -88,8 +88,6 @@ class uploadService {
   async calculateAdvisorPayout(saleDataID, data) {
     try {
       console.log(`saleDataID: ${saleDataID}`);
-
-      // Find the existing advisor payout entry
       const advisor = await Payout.findOne({
         where: { advisorId: data?.CRMContactId },
       });
@@ -341,7 +339,7 @@ class uploadService {
         cashType: data?.CashType,
         planType: data?.PlanType,
         payable: data?.Payable,
-        percetagePayable: data?.PercentagePayable,
+        percentagePayable: data?.PercentagePayable,
         cashType: data?.CashType,
         cashMatchId: data?.CashMatchId,
         premium: data?.Premium,
