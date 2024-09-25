@@ -1,5 +1,6 @@
 const { DataTypes } =require ('sequelize');
 const { sequelize } =require ('../../db.js');
+const advisorDetail = require('./advisorDetail.js');
 
 const Payout = sequelize.define(
   'Payout',
@@ -18,31 +19,7 @@ const Payout = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    period: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    totalGrossFCI: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    totalAdvisorSplit: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    totalDeduction: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    netPayout: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
     margin: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    advisorSplit: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
@@ -70,10 +47,6 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    finalAmount: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
     datePaid: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -82,14 +55,12 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    advisorSplit: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
+   
   },
   {
     timestamps: true,
   }
 );
-
+Payout.hasMany(advisorDetail, { foreignKey: 'PayoutID' });
+advisorDetail.belongsTo(Payout, { foreignKey: 'PayoutID' });
 module.exports = Payout;

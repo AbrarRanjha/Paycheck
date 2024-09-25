@@ -11,12 +11,12 @@ const router = Router();
 
 router.post(
   '/request',
-  authenticate,
+  // authenticate,
   EarlyPaymentController.createEarlyPaymentRequest
 );
 router.post(
   '/verifyByAdmin/:id',
-  adminAuthenticate,
+  // adminAuthenticate,
   EarlyPaymentController.approveOrRejectEarlyPaymentById
 );
 router.get('/:id', EarlyPaymentController.getEarlyPaymentById);

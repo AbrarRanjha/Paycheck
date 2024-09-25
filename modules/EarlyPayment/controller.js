@@ -6,8 +6,8 @@ class EarlyPaymentController {
   async createEarlyPaymentRequest(req, res) {
     try {
       const {
-        employeeId,
-        employeeName,
+        advisorId,
+        advisorName,
         totalCommission,
         reason,
         requestPaymentAmount,
@@ -15,8 +15,8 @@ class EarlyPaymentController {
       } = req.body;
 
       const employee = await EarlyPaymentService.createEarlyPayment({
-        employeeId,
-        employeeName,
+        advisorId,
+        advisorName,
         totalCommission,
         reason,
         requestPaymentAmount,
@@ -71,18 +71,20 @@ class EarlyPaymentController {
   async approveOrRejectEarlyPaymentById(req, res) {
     try {
       const id = req.params.id;
-      const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);
+      const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);      
       if (earlyPayment) {
         const { status, note } = req.body;
         const updatedEarlyPayment = await EarlyPaymentService.updateByAdmin(
           id,
-          { status, note }
+          { status, note },earlyPayment
         );
         res.status(200).json( updatedEarlyPayment );
       } else {
         res.status(404).json({ error: 'EarlyPayment not found' });
       }
     } catch (error) {
+      console.log("error", error);
+      
       res.status(500).json({ error: error.message });
     }
   }

@@ -52,7 +52,7 @@ class UploadController {
         originalFileName,
         category
       );
-      jsonData.forEach(async data => {
+      for (const data of jsonData) {
         console.log('data: ' + JSON.stringify(data));
         if (data?.IORef) {
           const saleData = await UploadService.saveSaleData(
@@ -64,13 +64,13 @@ class UploadController {
           await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
           results.push(data);
         }
-      });
-
-      res
+      }
+      const uploadss = await UploadService.getUploadData();
+      return res
         .status(200)
-        .json({ message: 'Excel file processed successfully', results });
+        .json({ message: 'Excel file processed successfully', uploadss });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         error: 'Error processing the Excel file',
         details: error.message,
       });

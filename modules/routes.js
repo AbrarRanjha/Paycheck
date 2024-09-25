@@ -9,6 +9,7 @@ const Payout = require('./Payouts/index.js');
 const ClientCommissionSplit = require('./CommissionSplit/index.js');
 const EmployeeReports = require('./EmployeeReports/index.js');
 const ErrorLogs = require('./ErrorLogs/index.js');
+const Dashboard = require('./Dashboard/index.js');
 const router = Router();
 
 router.use('/user', userRoutes);
@@ -21,5 +22,6 @@ router.use('/commissionSplits',ClientCommissionSplit);
 router.use('/employeeReports', EmployeeReports);
 router.use('/earlyPayment', earlyPaymentRoutes);
 router.use('/errorLogs', ErrorLogs);
+router.use('/dashboard', Dashboard);
 
 module.exports = router;
