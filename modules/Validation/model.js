@@ -2,18 +2,14 @@ const { DataTypes } =require ('sequelize');
 const {sequelize} =require ('../../db.js');
 const SalesData =require ('../SaleData/model.js');
 
-const ErrorLogs = sequelize.define('ErrorLogs', {
+const Validation = sequelize.define('Validation', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  transactionID: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  errorDescription: {
+  errrorDescription: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -22,9 +18,8 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     allowNull: true,
   },
   status: {
-    type: DataTypes.BOOLEAN,
+    type: DataTypes.STRING,
     allowNull: true,
-    defaultValue:true
   },
   comment: {
     type: DataTypes.DATE,
@@ -34,9 +29,25 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  grossFCI: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  FCIRecognition: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  payable: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  percetagePayable: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
 }, {
   timestamps: true,
 });
-SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
-ErrorLogs.belongsTo(SalesData, { foreignKey: 'saleDataId' });
-module.exports = ErrorLogs;
+SalesData.hasMany(Validation, { foreignKey: 'saleDataId' });
+Validation.belongsTo(SalesData, { foreignKey: 'uploadId' });
+module.exports = Validation;

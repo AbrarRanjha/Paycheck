@@ -11,68 +11,46 @@ class commissionSplitService {
   }
   async updateCommissionSplitById(id, data) {
     try {
-      console.log('data: ' + typeof data?.advisorSplitPercentage);
-
-      const commissionRecord = await commissionSplit.findByPk(id);
-      if (!commissionRecord) {
+      console.log('Data received: ', data);
+        const commissionRecord = await commissionSplit.findByPk(id);
+        if (!commissionRecord) {
         throw new Error('Commission Split record not found.');
       }
-      if (
-        typeof data.advisorSplitPercentage !== 'undefined' &&
-        data.advisorSplitPercentage !== commissionRecord.advisorSplitPercentage
-      ) {
-        if (data.advisorSplitPercentage == 0) {
-          console.log('advisorSplitPercentage');
-
-          commissionRecord.advisorSplitPercentage = 0;
-          commissionRecord.advisorSplitAmount = 0;
+        Object.keys(data).forEach((key) => {
+        if (key === 'splitPercentage') {
+          if (data.splitPercentage == 0) {
+            commissionRecord.splitPercentage = 0;
+            commissionRecord.splitAmount = 0;
+            
+          } else {
+            commissionRecord.splitPercentage = data.splitPercentage;
+            const grossValue = commissionRecord.grossFCI || 0; // Ensure grossValue is defined
+            commissionRecord.splitAmount = (
+              grossValue *
+              (data.splitPercentage / 100)
+            ).toFixed(2);
+            commissionRecord.FCIRecognition=grossValue-commissionRecord.splitAmount
+          }
         } else {
-          commissionRecord.advisorSplitPercentage = data.advisorSplitPercentage;
-          const grossValue = commissionRecord.grossValue || 0; // Replace with actual field
-          commissionRecord.advisorSplitAmount = (
-            grossValue *
-            (data.advisorSplitPercentage / 100)
-          ).toFixed(2);
+          // Update other fields directly if they exist in the data object
+          if (typeof data[key] !== 'undefined') {
+            commissionRecord[key] = data[key];
+          }
         }
-      }
-      if (
-        typeof data.introducerSplitPercentage !== 'undefined' &&
-        data.introducerSplitPercentage !==
-          commissionRecord.introducerSplitPercentage
-      ) {
-        if (data.introducerSplitPercentage == 0) {
-          console.log('advisorSplitPercentage');
-
-          commissionRecord.introducerSplitPercentage = 0;
-          commissionRecord.introducerSplitAmount = 0;
-        }
-        commissionRecord.introducerSplitPercentage =
-          data.introducerSplitPercentage;
-        const grossValue = commissionRecord.grossValue || 0; // Replace with actual field
-        commissionRecord.introducerSplitAmount = (
-          grossValue *
-          (data.introducerSplitPercentage / 100)
-        ).toFixed(2);
-      }
-      if (
-        data.advisorName &&
-        data.advisorName !== commissionRecord.advisorName
-      ) {
-        commissionRecord.advisorName = data.advisorName;
-      }
-      if (
-        data.introducerName &&
-        data.introducerName !== commissionRecord.introducerName
-      ) {
-        commissionRecord.introducerName = data.introducerName;
-      }
-      return commissionRecord;
+      });
+  
+      // Save the updated commission record
+      await commissionRecord.save();
+  
+      // Return success response
+      return { message: 'Commission Split updated successfully', commissionRecord };
     } catch (error) {
-      console.log('error: ' + error);
-
-      throw new Error('Failed to get commissionSplit: ' + error.message);
+      console.error('Failed to update commissionSplit: ', error);
+      throw new Error('Failed to update commissionSplit: ' + error.message);
     }
   }
+  
+  
   async getAllCommissionSplit(limit, skip) {
     try {
       limit = parseInt(limit, 10);

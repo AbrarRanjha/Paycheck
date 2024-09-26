@@ -31,7 +31,7 @@ class UploadController {
       res.status(500).json({ error: error.message });
     }
   }
- 
+
   async uploadCSVFile(req, res) {
     try {
       const file = req.file;
@@ -53,28 +53,22 @@ class UploadController {
         category
       );
       jsonData.forEach(async data => {
-        console.log("data: " + JSON.stringify(data));
-        
-        // Validate and process each row of data here
-        // if (this.validateData(data)) {
-        const saleData = await UploadService.saveSaleData(data, uploadData?.id);
-        await UploadService.calculateSplitCommsion(saleData?.id, data);
-        results.push(data);
-        // } else {
-        //     this.logError(data, 'Validation error');
-        // }
+        console.log('data: ' + JSON.stringify(data));
+        if (data?.IORef) {
+          const saleData = await UploadService.saveSaleData(
+            data,
+            uploadData?.id
+          );
+          await UploadService.calculateSplitCommission(saleData?.id, data);
+          await UploadService.calculateAdvisorPayout(saleData?.id, data);
+          await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          results.push(data);
+        }
       });
 
-      // Insert valid data into the database
-      if (results.length > 0) {
-        res
-          .status(200)
-          .json({ message: 'Excel file processed successfully', results });
-      } else {
-        res
-          .status(400)
-          .json({ message: 'No valid data found in the Excel file' });
-      }
+      res
+        .status(200)
+        .json({ message: 'Excel file processed successfully', results });
     } catch (error) {
       res.status(400).json({
         error: 'Error processing the Excel file',

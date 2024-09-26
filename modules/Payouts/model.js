@@ -18,19 +18,19 @@ const Payout = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    totalPayout: {
+    period: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    totalGrossFCI: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    loanDeduction: {
+    totalAdvisorSplit: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    expenses: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    clawbackDeduction: {
+    totalDeduction: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
@@ -38,19 +38,51 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    forwardBalance: {
+    margin: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    earlyPaymentRequest: {
-      type: DataTypes.BOOLEAN,
+    advisorSplit: {
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
-    payoutDate: {
+    payAways: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    advisorBalance: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+   loanRepayment: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    deduction: {
+       type: DataTypes.FLOAT,
+       allowNull: true,
+     },
+    expenses: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    advances: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    finalAmount: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    datePaid: {
       type: DataTypes.DATE,
       allowNull: true,
     },
-    refundAmount: {
+    amountPaid: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    advisorSplit: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },

@@ -57,7 +57,8 @@ class RefundPaymentController {
       const RefundPayment = await RefundPaymentService.getRefundPaymentById(id);
       if (RefundPayment) {
         const employeeHistory = await RefundPaymentService.getEmployeeHistory(
-          RefundPayment?.employeeId
+          RefundPayment?.employeeId,
+          RefundPayment?.id
         );
        return res.status(200).json({ RefundPayment, employeeHistory });
       } else {

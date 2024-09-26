@@ -57,7 +57,8 @@ class EarlyPaymentController {
       const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);
       if (earlyPayment) {
         const employeeHistory = await EarlyPaymentService.getEmployeeHistory(
-          earlyPayment?.aemployeeId
+          earlyPayment?.employeeId,
+          earlyPayment?.id
         );
         res.status(200).json({ earlyPayment, employeeHistory });
       } else {

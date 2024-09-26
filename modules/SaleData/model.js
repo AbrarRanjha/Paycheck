@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
+const Upload = require('../Upload/model.js');
 
 const SalesData = sequelize.define(
   'SalesData',
@@ -15,23 +16,15 @@ const SalesData = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    employeeId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    employeeName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     clientName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    saleAmount: {
-      type: DataTypes.FLOAT,
+    startDate: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
-    date: {
+    endDate: {
       type: DataTypes.DATE,
       allowNull: true,
     },
@@ -43,56 +36,44 @@ const SalesData = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    commissionRate: {
+    plzNumber: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    grossCommission: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    paymentStatus: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    comments: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    service: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    IORef: {
+    frequency: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     grossFCI: {
-      type: DataTypes.STRING,
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
     FCIRecognition: {
-      type: DataTypes.STRING,
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
     provider: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    submittedPremium: {
-      type: DataTypes.STRING,
+    premium: {
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
     payable: {
-      type: DataTypes.STRING,
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
-    incomeType: {
-      type: DataTypes.STRING,
+    percentagePayable: {
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
     cashType: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cashMatchId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   },
@@ -100,5 +81,6 @@ const SalesData = sequelize.define(
     timestamps: true,
   }
 );
-
 module.exports = SalesData;
+Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
+SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });

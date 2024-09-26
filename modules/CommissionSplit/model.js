@@ -26,38 +26,47 @@ const CommissionSplit = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    advisorSplitPercentage: {
+   splitPercentage: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    grossValue: {
+    splitAmount: {
+       type: DataTypes.FLOAT,
+       allowNull: true,
+     },
+    grossFCI: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    advisorSplitAmount: {
+    FCIRecognition: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    introducerId: {
+    splitType: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    introducerName: {
+    frequency: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    introducerSplitPercentage: {
+    premium: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    introducerSplitAmount: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    clientId: {
+    splitPartnerId: {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    splitPartnerName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+ 
+    // clientId: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
     clientName: {
       type: DataTypes.STRING,
       allowNull: true,
