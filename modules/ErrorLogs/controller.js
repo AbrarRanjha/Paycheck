@@ -17,20 +17,28 @@ class ErrorLogsController {
   }
   async updateErrorLogsById(req, res) {
     try {
-      const id = req.params.id;
-      const { status } = req.body;
-      const ErrorLogs = await ErrorLogsService.getErrorLogsById(id);
-      if (ErrorLogs) {
-        if (status == 'Approved') {
-           await ErrorLogsService.validateError(id);
-          return res.status(200).json({ message: 'error validated' });
-        } else {
-          return res.status(200).json({ message: 'error is still pending' });
-        }
-      } else {
-        return res.status(404).json({ error: 'ErrorLogs not found' });
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
+        return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        const ErrorLogs = await ErrorLogsService.getErrorLogsById(element.id);
+        if (ErrorLogs) {
+          if (element.updatedFields.status == 'Approved') {
+            await ErrorLogsService.validateError(
+              element.id,
+              element.updatedFields.status
+            );
+          }
+        }
+      }
+      const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit, skip);
+      return res.status(200).json(ErrorLogs);
     } catch (error) {
+      console.log('error', error);
+
       res.status(500).json({ error: error.message });
     }
   }
@@ -41,11 +49,7 @@ class ErrorLogsController {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
       const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit, skip);
-      if (ErrorLogs) {
-        return res.status(200).json(ErrorLogs);
-      } else {
-        return res.status(404).json({ error: 'ErrorLogs not found' });
-      }
+      return res.status(200).json(ErrorLogs);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

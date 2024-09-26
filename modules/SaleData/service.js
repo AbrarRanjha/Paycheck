@@ -16,7 +16,6 @@ class saleDataService {
       await handlePercentagePayableUpdate(existingSaleData, data);
       updateSaleDataFields(existingSaleData, data);
       const updatedSaleData = await saveSaleData(existingSaleData);
-
       return { message: 'Sale data updated successfully', updatedSaleData };
     } catch (error) {
       console.log('Failed to update saleData', error);

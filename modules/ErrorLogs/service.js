@@ -9,11 +9,13 @@ class errorLogsService {
       throw new Error('Failed to get errorLogs: ' + error.message);
     }
   }
-  async validateError(id) {
+  async validateError(id, status) {
     try {
-      const res = await ErrorLogs.destroy({ where: { id } });
+      const res = await ErrorLogs.update({ status }, { where: { id } });
       return res;
     } catch (error) {
+      console.log("Failed to update errorLogs: " + error);
+      
       throw new Error('Failed to get errorLogs: ' + error.message);
     }
   }

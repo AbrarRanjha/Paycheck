@@ -4,7 +4,7 @@ const router = Router();
 
 router.get('/:id', CommissionSplitController.getCommissionSplitById);
 router.get('/', CommissionSplitController.getCommissionSplit);
-router.put('/updateCommission/:id', CommissionSplitController.updateCommissionSplit);
+router.put('/updateCommission', CommissionSplitController.updateCommissionSplit);
 
 // You can define more routes related to users here
 module.exports = router;

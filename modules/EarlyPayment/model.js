@@ -43,7 +43,7 @@ const EarlyPayments = sequelize.define(
       allowNull: true,
     },
     status: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     approveDate: {

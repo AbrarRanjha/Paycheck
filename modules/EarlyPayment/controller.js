@@ -21,7 +21,7 @@ class EarlyPaymentController {
         reason,
         requestPaymentAmount,
         requestDate: requestDate,
-        status: 'pending',
+        status: 'Pending',
         managerId: req?.user?.id,
       });
       res

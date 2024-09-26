@@ -34,55 +34,20 @@ class PayoutController {
       return res.status(500).json({ error: error.message });
     }
   }
+
   async getAdvisorPayoutPeriodically(req, res) {
     try {
       const { limit, skip, period } = req.query;
-      const selectedPeriod = period || 'monthly'; // Default to 'monthly'
-      let payoutsArray = [];
+      const selectedPeriod = period || 'monthly';
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const Payouts = await PayoutService.getAllPayout(limit, skip);
-      const currentWeek = moment().week();
-      const currentMonth = moment().month();
-
-      for (let index = 0; index < Payouts.length; index++) {
-        const payout = Payouts[index];
-        let totalGrossFCI = 0,
-          totalAdvisorSplit = 0,
-          totalDeduction = 0,
-          netPayout = 0;
-        payout.advisorDetails.forEach(detail => {
-          const detailCreatedAt = moment(detail.createdAt);
-          if (selectedPeriod === 'weekly') {
-            if (detailCreatedAt.week() === currentWeek) {
-              totalGrossFCI += detail.grossFCI;
-              totalAdvisorSplit += detail.advisorSplitAmount;
-            }
-          } else if (selectedPeriod === 'monthly') {
-            if (detailCreatedAt.month() === currentMonth) {
-              totalGrossFCI += detail.grossFCI;
-              totalAdvisorSplit += detail.advisorSplitAmount;
-            }
-          }
-        });
-        totalDeduction =
-        payout.deduction + payout.loanRepayment + payout.expenses + payout.amountPaid + payout.payAways;
-        netPayout =
-        totalAdvisorSplit + payout.advisorBalance + payout.advances - totalDeduction;
-        payoutsArray.push({
-          advisorName: payout.advisorName,
-          advisorId: payout.advisorId,
-          period: selectedPeriod,
-          totalGrossFCI: totalGrossFCI,
-          totalAdvisorSplit: totalAdvisorSplit,
-          totalDeduction: totalDeduction,
-          netPayout: netPayout,
-          advisor:payout
-        });
-      }
-
-      return res.status(200).json(payoutsArray);
+      const payoutResponse = await getAdvisorPayoutPeriod(
+        limit,
+        skip,
+        selectedPeriod
+      );
+      return res.status(200).json(payoutResponse);
     } catch (error) {
       console.log('error', error);
       return res.status(500).json({ error: error.message });
@@ -91,11 +56,25 @@ class PayoutController {
 
   async updatePayout(req, res) {
     try {
-      console.log('updatePayout');
-      const id = req.params.id;
-      const data = req.body;
-      const Payout = await PayoutService.updatePayoutData(id, data);
-      return res.status(200).json(Payout);
+      const { limit, skip, period } = req.query;
+      if (!limit || !skip) {
+        return res.status(400).json({ error: 'Limit or skip is undefined' });
+      }
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        const Payout = await PayoutService.updatePayoutData(
+          element.id,
+          element.updatedFields
+        );
+      }
+      const selectedPeriod = period || 'monthly';
+      const payoutResponse = await getAdvisorPayoutPeriod(
+        limit,
+        skip,
+        selectedPeriod
+      );
+      return res.status(200).json(payoutResponse);
     } catch (error) {
       console.log('error: ' + error);
       return res.status(500).json({ error: error.message });
@@ -104,3 +83,58 @@ class PayoutController {
 }
 
 module.exports = new PayoutController();
+async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
+  try {
+    let payoutsArray = [];
+    const Payouts = await PayoutService.getAllPayout(limit, skip);
+    const currentWeek = moment().week();
+    const currentMonth = moment().month();
+
+    for (let index = 0; index < Payouts.length; index++) {
+      const payout = Payouts[index];
+      let totalGrossFCI = 0,
+        totalAdvisorSplit = 0,
+        totalDeduction = 0,
+        netPayout = 0;
+      payout.advisorDetails.forEach(detail => {
+        const detailCreatedAt = moment(detail.createdAt);
+        if (selectedPeriod === 'weekly') {
+          if (detailCreatedAt.week() === currentWeek) {
+            totalGrossFCI += detail.grossFCI;
+            totalAdvisorSplit += detail.advisorSplitAmount;
+          }
+        } else if (selectedPeriod === 'monthly') {
+          if (detailCreatedAt.month() === currentMonth) {
+            totalGrossFCI += detail.grossFCI;
+            totalAdvisorSplit += detail.advisorSplitAmount;
+          }
+        }
+      });
+      totalDeduction =
+        payout.deduction +
+        payout.loanRepayment +
+        payout.expenses +
+        payout.amountPaid +
+        payout.payAways;
+      netPayout =
+        totalAdvisorSplit +
+        payout.advisorBalance +
+        payout.advances -
+        totalDeduction;
+      payoutsArray.push({
+        advisorName: payout.advisorName,
+        advisorId: payout.advisorId,
+        period: selectedPeriod,
+        totalGrossFCI: totalGrossFCI,
+        totalAdvisorSplit: totalAdvisorSplit,
+        totalDeduction: totalDeduction,
+        netPayout: netPayout,
+        advisor: payout,
+      });
+    }
+    return payoutsArray;
+  } catch (error) {
+    console.log('error: ' + error);
+    throw new Error('Error occurred', error);
+  }
+}
