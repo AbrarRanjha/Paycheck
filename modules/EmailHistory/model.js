@@ -9,7 +9,7 @@ const EmailHistory = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    recipientName: {
+    receipentName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -23,7 +23,14 @@ const EmailHistory = sequelize.define(
         notEmpty: true,
       },
     },
-    email: {
+    senderEmail: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+    },
+    receipentEmail: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -32,11 +39,11 @@ const EmailHistory = sequelize.define(
     },
     subject: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     heading: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
@@ -44,7 +51,7 @@ const EmailHistory = sequelize.define(
     },
     footer: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     date: {
       type: DataTypes.DATE,

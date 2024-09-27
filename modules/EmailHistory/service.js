@@ -1,3 +1,4 @@
+const User = require('../User/model.js');
 const EmailHistory = require('./model.js');
 
 class EmailHistoryService {
@@ -18,12 +19,30 @@ class EmailHistoryService {
       throw new Error('Failed to get Email Histories: ' + error.message);
     }
   }
+  async getAllEmailHistoriesForSpecificUser(email) {
+    try {
+      const histories = await EmailHistory.findAll({
+        where: { senderEmail: email },
+      });
+      return histories;
+    } catch (error) {
+      throw new Error('Failed to get Email Histories: ' + error.message);
+    }
+  }
 
   async createEmailHistory(data) {
     try {
-      const newHistory = await EmailHistory.create(data);
-      return newHistory;
+      const admin = await User.findOne({
+        where: { email: data.receipentEmail },
+      });
+      if (admin && admin.role == 'admin') {
+        const newHistory = await EmailHistory.create(data);
+        return newHistory;
+      } else {
+        throw new Error('receipent email is not correct ');
+      }
     } catch (error) {
+      console.log('error creating Email History: ' + error);
       throw new Error('Failed to create Email History: ' + error.message);
     }
   }

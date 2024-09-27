@@ -11,6 +11,10 @@ router.get('/pendingEarlyPayment', dashboardController.pendingEarlyPayment);
 router.get('/approvedEarlyPayment', dashboardController.approveEarlyPayment);
 router.get('/pendingRefundPayment', dashboardController.pendingRefundPayment);
 router.get('/approvedRefundPayment', dashboardController.approveRefundPayment);
+router.get('/totalAvisor', dashboardController.getTotalAvisor);
+router.get('/productsType', dashboardController.getTotalProducts);
+router.get('/splitType', dashboardController.getTotalSplit);
+router.get('/advisorBase', dashboardController.getAdvisorBase);
 
 // You can define more routes related to users here
 module.exports = router

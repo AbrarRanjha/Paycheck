@@ -6,9 +6,9 @@ class EmailHistoryController {
       const id = req.params.id;
       const emailHistory = await EmailHistoryService.getEmailHistoryById(id);
       if (emailHistory) {
-        res.status(200).json(emailHistory);
+      return  res.status(200).json(emailHistory);
       } else {
-        res.status(404).json({ error: 'Email History not found' });
+      return  res.status(404).json({ error: 'Email  not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -17,8 +17,17 @@ class EmailHistoryController {
 
   async getAllEmailHistories(req, res) {
     try {
-      const emailHistories = await EmailHistoryService.getAllEmailHistories();
-      res.status(200).json(emailHistories);
+      const user = req?.user;
+      if (user.role == 'admin') {
+        const emailHistories = await EmailHistoryService.getAllEmailHistories();
+        return res.status(200).json(emailHistories);
+      } else {
+        const emailHistories =
+          await EmailHistoryService.getAllEmailHistoriesForSpecificUser(
+            user.email
+          );
+        return res.status(200).json(emailHistories);
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -29,8 +38,10 @@ class EmailHistoryController {
       const emailHistory = await EmailHistoryService.createEmailHistory(
         req.body
       );
-      res.status(201).json(emailHistory);
+     return res.status(201).json(emailHistory);
     } catch (error) {
+      console.log('error', error);
+
       res.status(500).json({ error: error.message });
     }
   }
@@ -43,9 +54,9 @@ class EmailHistoryController {
         req.body
       );
       if (emailHistory) {
-        res.status(200).json(emailHistory);
+       return res.status(200).json(emailHistory);
       } else {
-        res.status(404).json({ error: 'Email History not found' });
+       return res.status(404).json({ error: 'Email History not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -56,9 +67,9 @@ class EmailHistoryController {
     try {
       const id = req.params.id;
       const message = await EmailHistoryService.deleteEmailHistory(id);
-      res.status(200).json({ message });
+     return res.status(200).json({ message });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+     return res.status(500).json({ error: error.message });
     }
   }
 }

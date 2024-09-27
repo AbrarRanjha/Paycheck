@@ -43,6 +43,7 @@ const User = sequelize.define(
     role: {
       type: DataTypes.STRING,
       allowNull: true,
+      defaultValue: 'manager',
     },
     resetToken: {
       type: DataTypes.STRING,

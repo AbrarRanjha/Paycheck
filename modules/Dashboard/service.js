@@ -5,15 +5,6 @@ const EarlyPayments = require('../EarlyPayment/model.js');
 const RefundPayments = require('../RefundPayment/model.js');
 const CommissionSplit = require('../CommissionSplit/model.js');
 class errorLogsService {
-  async getAllCompanyComiision() {
-    try {
-      const totalCommission = await SalesData.sum('FCIRecognition');
-      return totalCommission;
-    } catch (error) {
-      console.log('error', error);
-      throw new Error('Failed to get error logs: ' + error.message);
-    }
-  }
   async getTopAdvisors() {
     try {
       const commissionData = await CommissionSplit.findAll(); // Replace with actual method to fetch data
@@ -169,6 +160,102 @@ class errorLogsService {
       throw new Error('Failed to get error logs: ' + error.message);
     }
   }
+  async getAllCompanyComiision() {
+    try {
+      const totalCommission = await SalesData.sum('FCIRecognition');
+      return totalCommission;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get error logs: ' + error.message);
+    }
+  }
+  async totalAdvisor() {
+    try {
+      const allLogs = await SalesData.count({
+        distinct: true,
+        col: 'advisorName',
+      });
+      return allLogs;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get error logs: ' + error.message);
+    }
+  }
+  async totalProducts() {
+    try {
+      const allLogs = await SalesData.count({
+        distinct: true,
+        col: 'planType',
+      });
+      return allLogs;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get error logs: ' + error.message);
+    }
+  }
+  async totalSplits() {
+    try {
+      const allLogs = await CommissionSplit.count({
+        distinct: true,
+        col: 'splitType',
+      });
+      return allLogs;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get error logs: ' + error.message);
+    }
+  }
+  async calculateForEachAdvisor() {
+    try {
+      // Get all unique advisors
+      const advisors = await SalesData.findAll({
+        attributes: ['advisorName'],
+        group: ['advisorName'],
+        raw: true,
+      });
+  
+      // Initialize an array to store results for each advisor
+      const advisorResults = [];
+  
+      // Loop through each advisor and calculate individual metrics
+      for (const advisor of advisors) {
+        const advisorName = advisor.advisorName;
+  
+        // Get total commission for the advisor
+        const totalCommission = await SalesData.sum('FCIRecognition', {
+          where: { advisorName },
+        });
+  
+        // Get product count for the advisor
+        const productCount = await SalesData.count({
+          where: { advisorName },
+          distinct: true,
+          col: 'planType',
+        });
+  
+        // Get split count for the advisor
+        const splitCount = await CommissionSplit.count({
+          where: { advisorName }, // Assuming `CommissionSplit` also has `advisorName`
+          distinct: true,
+          col: 'splitType',
+        });
+  
+        // Push the results for this advisor
+        advisorResults.push({
+          advisorName,
+          totalCommission,
+          productCount,
+          splitCount,
+        });
+      }
+  
+      return advisorResults; // Return results for each advisor
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to calculate values for each advisor: ' + error.message);
+    }
+  }
+  
 }
 
 module.exports = new errorLogsService();

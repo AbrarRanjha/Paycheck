@@ -68,5 +68,38 @@ class ErrorLogsController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getTotalAvisor(req, res) {
+    try {
+      const resp = await DashboardService.totalAdvisor();
+      return res.status(200).json({ advisorCount: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getTotalProducts(req, res) {
+    try {
+      const resp = await DashboardService.totalProducts();
+      return res.status(200).json({ advisorCount: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getTotalSplit(req, res) {
+    try {
+      const resp = await DashboardService.totalSplits();
+      return res.status(200).json({ splitCount: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getAdvisorBase(req, res) {
+    try {
+      const resp = await DashboardService.calculateForEachAdvisor();
+      return res.status(200).json({ advisorBase: resp });
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 module.exports = new ErrorLogsController();
