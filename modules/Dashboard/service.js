@@ -78,7 +78,7 @@ class errorLogsService {
         data = await SalesData.findAll({
           attributes: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'),
+              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%m'),
               'month',
             ], // This groups by year-month
             [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
@@ -86,7 +86,7 @@ class errorLogsService {
           group: ['month'],
           order: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'),
+              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%m'),
               'ASC',
             ],
           ],
@@ -95,7 +95,7 @@ class errorLogsService {
         data = await SalesData.findAll({
           attributes: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%u'),
+              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%u'),
               'week',
             ], // This groups by year-week
             [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
@@ -103,7 +103,7 @@ class errorLogsService {
           group: ['week'],
           order: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%u'),
+              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%u'),
               'ASC',
             ],
           ],
@@ -207,6 +207,12 @@ class errorLogsService {
   }
   async calculateForEachAdvisor() {
     try {
+      // Get overall totals
+      const totalCommissionAll = await this.getAllCompanyComiision(); // Total Commission
+      const totalProductsAll = await this.totalProducts(); // Total Products
+      const totalSplitsAll = await this.totalSplits(); // Total Splits
+      const totalAdvisorsAll = await this.totalAdvisor(); // Total Advisors
+  
       // Get all unique advisors
       const advisors = await SalesData.findAll({
         attributes: ['advisorName'],
@@ -240,12 +246,20 @@ class errorLogsService {
           col: 'splitType',
         });
   
+        // Calculate percentages
+        const commissionPercentage = totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0;
+        const productPercentage = totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0;
+        const splitPercentage = totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0;
+  
         // Push the results for this advisor
         advisorResults.push({
           advisorName,
           totalCommission,
           productCount,
           splitCount,
+          commissionPercentage: commissionPercentage, // Format to 2 decimal places
+          productPercentage: productPercentage,
+          splitPercentage: splitPercentage,
         });
       }
   
@@ -255,6 +269,7 @@ class errorLogsService {
       throw new Error('Failed to calculate values for each advisor: ' + error.message);
     }
   }
+  
   
 }
 

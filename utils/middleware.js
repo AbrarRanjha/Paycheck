@@ -71,7 +71,7 @@ const User =require ('../modules/User/model.js');
           const currentTimestamp = Math.floor(Date.now() / 1000);
           if (
             (decodedToken.exp && decodedToken.exp < currentTimestamp) ||
-            user?.role != 'ADMIN'
+            user?.role != 'admin'
           ) {
             reply.status(401).send({ message: 'Unauthorized' });
           } else {

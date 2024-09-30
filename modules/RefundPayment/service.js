@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const RefundPaymentModel =require ('./model.js');
+const Payout = require('../Payouts/model.js');
 class RefundPaymentModelService {
   async getRefundPaymentById(id) {
     try {
@@ -13,7 +14,7 @@ class RefundPaymentModelService {
     try {
       const res = await RefundPaymentModel.findAll({
         where: {
-          employeeId: employeeId,
+          managerId: employeeId,
           id: {
             [Op.ne]: excludeId, 
           },
@@ -24,7 +25,7 @@ class RefundPaymentModelService {
       throw new Error('Failed to get RefundPaymentModel: ' + error.message);
     }
   }
-  async updateByAdmin(id, data) {
+  async updateByAdmin(id, data,RefundPayment) {
     try {
       if (data?.status == 'Approved') {
         await RefundPaymentModel.update(
@@ -40,6 +41,16 @@ class RefundPaymentModelService {
             returning: true,
           }
         );
+        console.log("Updated RefundPaymentModel",RefundPayment);
+        
+        const PayoutDetail = await Payout.findOne({
+          where: { advisorId: RefundPayment?.employeeId },
+        });
+        console.log('payoutDetail', PayoutDetail);
+
+        PayoutDetail.advances =
+          PayoutDetail.advances + RefundPayment?.requestPaymentAmount;
+        await PayoutDetail.save();
       } else {
         await RefundPaymentModel.update(
           {

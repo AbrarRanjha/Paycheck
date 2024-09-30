@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const EarlyPaymentModel = require('./model.js');
 const Payout = require('../Payouts/model.js');
+const User = require('../User/model.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {
     try {
@@ -14,7 +15,7 @@ class EarlyPaymentModelService {
     try {
       const res = await EarlyPaymentModel.findAll({
         where: {
-          employeeId: employeeId,
+          managerId: employeeId,
           id: {
             [Op.ne]: excludeId,
           },
@@ -28,8 +29,8 @@ class EarlyPaymentModelService {
 
   async updateByAdmin(id, data, earlyPayment) {
     try {
-          console.log("data: " + JSON.stringify(data));
-          
+      console.log('data: ' + JSON.stringify(data));
+
       if (data?.status == 'Approved') {
         await EarlyPaymentModel.update(
           {
@@ -46,8 +47,8 @@ class EarlyPaymentModelService {
         const PayoutDetail = await Payout.findOne({
           where: { advisorId: earlyPayment?.advisorId },
         });
-        console.log("payoutDetail", PayoutDetail);
-        
+        console.log('payoutDetail', PayoutDetail);
+
         PayoutDetail.advances =
           PayoutDetail.advances + earlyPayment?.requestPaymentAmount;
         await PayoutDetail.save();
@@ -69,7 +70,7 @@ class EarlyPaymentModelService {
       const res = await EarlyPaymentModel.findByPk(id);
       return res;
     } catch (error) {
-      console.log("error: " + error);
+      console.log('error: ' + error);
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
@@ -90,6 +91,7 @@ class EarlyPaymentModelService {
       const res = await EarlyPaymentModel.findAll({
         limit: limit,
         offset: skip,
+        include: [{ model: User }],
       });
       return res;
     } catch (error) {

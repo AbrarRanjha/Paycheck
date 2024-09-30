@@ -9,12 +9,26 @@ class UploadController {
       const id = req.params.id;
       const Upload = await UploadService.getUploadById(id);
       if (Upload) {
-        res.status(200).json(Upload);
+        return res.status(200).json(Upload);
       } else {
-        res.status(400).json({ error: ' no data found' });
+        return res.status(400).json({ error: ' no data found' });
       }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  async updateUploadById(req, res) {
+    try {
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        await UploadService.updateUploadById(element.id, element.updatedFields);
+      }
+      const Upload = await UploadService.getUploadData();
+      return res.status(200).json(Upload);
+    } catch (error) {
+      console.log('error: ' + error);
+      return res.status(500).json({ error: error.message });
     }
   }
   async getUploadAllFiles(req, res) {

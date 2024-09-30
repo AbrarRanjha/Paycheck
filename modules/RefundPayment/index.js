@@ -11,12 +11,12 @@ const router = Router();
 
 router.post(
   '/request',
-  // authenticate,
+  authenticate,
   RefundPaymentController.createRefundPaymentRequest
 );
 router.post(
   '/verifyByAdmin/:id',
-  // adminAuthenticate,
+  adminAuthenticate,
   RefundPaymentController.approveOrRejectRefundPaymentById
 );
 router.get('/:id', RefundPaymentController.getRefundPaymentById);

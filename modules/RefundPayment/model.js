@@ -46,6 +46,10 @@ const RefundPayments = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    managerName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     approveDate: {
       type: DataTypes.DATE,
       allowNull: true,

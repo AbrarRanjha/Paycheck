@@ -96,17 +96,20 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
         totalAdvisorSplit = 0,
         totalDeduction = 0,
         netPayout = 0;
+        LgMargin = 0;
       payout.advisorDetails.forEach(detail => {
-        const detailCreatedAt = moment(detail.createdAt);
+        const detailCreatedAt = moment(detail.date);
         if (selectedPeriod === 'weekly') {
           if (detailCreatedAt.week() === currentWeek) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
+            LgMargin += detail.FCIRecognition;
           }
         } else if (selectedPeriod === 'monthly') {
           if (detailCreatedAt.month() === currentMonth) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
+            LgMargin += detail.FCIRecognition;
           }
         }
       });
@@ -129,6 +132,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
         totalAdvisorSplit: totalAdvisorSplit,
         totalDeduction: totalDeduction,
         netPayout: netPayout,
+        LgMargin: LgMargin,
         advisor: payout,
       });
     }

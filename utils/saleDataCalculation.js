@@ -172,6 +172,7 @@ const updateSaleDataFields = (existingSaleData, data) => {
   });
 };
 
+
 const saveSaleData = async existingSaleData => {
   return await existingSaleData.save();
 };

@@ -46,6 +46,10 @@ const EarlyPayments = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    managerName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     approveDate: {
       type: DataTypes.DATE,
       allowNull: true,

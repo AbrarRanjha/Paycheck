@@ -19,6 +19,10 @@ const advisorDetail = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
+    FCIRecognition: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
     advisorSplitAmount: {
       type: DataTypes.FLOAT,
       allowNull: true,

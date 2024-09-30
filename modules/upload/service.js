@@ -21,6 +21,19 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+  async updateUploadById(id, newData) {
+    try {
+      const upload = await Upload.findByPk(id);
+      Object.keys(newData).forEach(key => {
+        if (key !== 'percentagePayable') {
+          upload[key] = newData[key];
+        }
+      });
+      await upload.save();
+    } catch (error) {
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
   async getUploadData() {
     try {
       const upload = await Upload.findAll({
@@ -73,7 +86,9 @@ class uploadService {
         clientName: data?.ClientName,
         ...(isAdviser
           ? {
-              advisorId: data?.SellingAdviserName?.trim().toLowerCase().replace(/\s+/g, ''),
+              advisorId: data?.SellingAdviserName?.trim()
+                .toLowerCase()
+                .replace(/\s+/g, ''),
               advisorName: data?.SellingAdviserName,
             }
           : {
@@ -87,13 +102,25 @@ class uploadService {
       throw new Error(`Failed to get upload: ${error.message}`);
     }
   }
+  parseExcelDate(excelDate) {
+    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+    return date.toLocaleString();
+  }
   async calculateAdvisorPayout(saleDataID, data) {
     try {
+      let paymentDate;
       console.log(`saleDataID: ${saleDataID}`);
-      const advisorId = data?.SellingAdviserName?.trim().toLowerCase().replace(/\s+/g, '')     
+      const advisorId = data?.SellingAdviserName?.trim()
+        .toLowerCase()
+        .replace(/\s+/g, '');
       const advisor = await Payout.findOne({
         where: { advisorId },
       });
+      if (typeof data.PaymentDate == 'number') {
+        paymentDate = this.parseExcelDate(data.PaymentDate);
+      } else {
+        paymentDate = data.PaymentDate;
+      }
       const splitPercentage = 100 - data?.PercentagePayable;
       const splitAmount =
         Math.round(((data?.GrossFCI * splitPercentage) / 100) * 100) / 100;
@@ -101,16 +128,17 @@ class uploadService {
         await advisorDetail.create({
           PayoutID: advisor.id,
           transactionID: data?.IORef,
-          advisorSplitAmount: splitAmount,
           advisorSplitPercentage: splitPercentage,
+          advisorSplitAmount: splitAmount,
+          FCIRecognition: data?.FCIRecognition,
           grossFCI: data.GrossFCI,
-          date: data?.PaymentDate,
+          date: paymentDate,
         });
       } else {
         const payoutData = {
           saleDataId: saleDataID,
-          advisorName:data?.SellingAdviserName,
-          advisorId
+          advisorName: data?.SellingAdviserName,
+          advisorId,
         };
         const Payouts = await Payout.create(payoutData);
         await advisorDetail.create({
@@ -118,8 +146,9 @@ class uploadService {
           transactionID: data?.IORef,
           advisorSplitAmount: splitAmount,
           advisorSplitPercentage: splitPercentage,
+          FCIRecognition: data?.FCIRecognition,
           grossFCI: data.GrossFCI,
-          date: data?.PaymentDate,
+          date: paymentDate,
         });
       }
     } catch (error) {
@@ -138,8 +167,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid transactionID (IORef)',
         errorLocation: `${errorLocation}.transactionID`,
-        status:"Pending",
-        validationKey:"transactionID"
+        status: 'Pending',
+        validationKey: 'transactionID',
       });
     }
 
@@ -149,8 +178,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid clientName',
         errorLocation: `${errorLocation}.clientName`,
-        status:"Pending",
-        validationKey:"clientName",
+        status: 'Pending',
+        validationKey: 'clientName',
       });
     }
 
@@ -160,8 +189,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid startDate',
         errorLocation: `${errorLocation}.startDate`,
-        status:"Pending",
-        validationKey:"startDate"
+        status: 'Pending',
+        validationKey: 'startDate',
       });
     }
     if (!data?.EndDate || isNaN(new Date(data.EndDate))) {
@@ -169,8 +198,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid endDate',
         errorLocation: `${errorLocation}.endDate`,
-        status:"Pending",
-        validationKey:"endDate"
+        status: 'Pending',
+        validationKey: 'endDate',
       });
     }
 
@@ -180,8 +209,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid paymentDate',
         errorLocation: `${errorLocation}.paymentDate`,
-        status:"Pending",
-        validationKey:"paymentDate"
+        status: 'Pending',
+        validationKey: 'paymentDate',
       });
     }
 
@@ -191,8 +220,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid planType',
         errorLocation: `${errorLocation}.planType`,
-        status:"Pending",
-        validationKey:"planType"
+        status: 'Pending',
+        validationKey: 'planType',
       });
     }
 
@@ -202,8 +231,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'missing plzNumber',
         errorLocation: `${errorLocation}.plzNumber`,
-        status:"Pending",
-        validationKey:"plzNumber"
+        status: 'Pending',
+        validationKey: 'plzNumber',
       });
     }
 
@@ -213,8 +242,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid frequency',
         errorLocation: `${errorLocation}.frequency`,
-        status:"Pending",
-        validationKey:"frequency"
+        status: 'Pending',
+        validationKey: 'frequency',
       });
     }
 
@@ -224,8 +253,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid grossFCI',
         errorLocation: `${errorLocation}.grossFCI`,
-        status:"Pending",
-        validationKey:"grossFCI"
+        status: 'Pending',
+        validationKey: 'grossFCI',
       });
     }
 
@@ -235,8 +264,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid FCIRecognition',
         errorLocation: `${errorLocation}.FCIRecognition`,
-        status:"Pending",
-        validationKey:"FCIRecognition"
+        status: 'Pending',
+        validationKey: 'FCIRecognition',
       });
     }
 
@@ -246,8 +275,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Missing or invalid provider',
         errorLocation: `${errorLocation}.provider`,
-        status:"Pending",
-        validationKey:"provider"
+        status: 'Pending',
+        validationKey: 'provider',
       });
     }
 
@@ -257,8 +286,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid premium',
         errorLocation: `${errorLocation}.premium`,
-        status:"Pending",
-        validationKey:"premium"
+        status: 'Pending',
+        validationKey: 'premium',
       });
     }
 
@@ -268,8 +297,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid payable',
         errorLocation: `${errorLocation}.payable`,
-        status:"Pending",
-        validationKey:"payable"
+        status: 'Pending',
+        validationKey: 'payable',
       });
     }
 
@@ -279,8 +308,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid percentagePayable',
         errorLocation: `${errorLocation}.percentagePayable`,
-        status:"Pending",
-        validationKey:"percentagePayable"
+        status: 'Pending',
+        validationKey: 'percentagePayable',
       });
     }
 
@@ -290,8 +319,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid cashType',
         errorLocation: `${errorLocation}.cashType`,
-        status:"Pending",
-        validationKey:"cashType"
+        status: 'Pending',
+        validationKey: 'cashType',
       });
     }
 
@@ -301,8 +330,8 @@ class uploadService {
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid cashMatchId',
         errorLocation: `${errorLocation}.cashMatchId`,
-        status:"Pending",
-        validationKey:"cashMatchId"
+        status: 'Pending',
+        validationKey: 'cashMatchId',
       });
     }
 
@@ -315,7 +344,7 @@ class uploadService {
         errorLocation: error.errorLocation,
         validationKey: error.validationKey,
         date: new Date(),
-        status: error.status, 
+        status: error.status,
       });
     }
 
@@ -345,12 +374,14 @@ class uploadService {
       } else {
         submitted = data.Submitted;
       }
-      const advisorId = data?.SellingAdviserName?.trim().toLowerCase().replace(/\s+/g, '') // Standardize advisorName
+      const advisorId = data?.SellingAdviserName?.trim()
+        .toLowerCase()
+        .replace(/\s+/g, ''); // Standardize advisorName
 
       const saleData = {
         transactionID: data?.IORef,
         clientName: data?.ClientName,
-        advisorName:data?.SellingAdviserName,
+        advisorName: data?.SellingAdviserName,
         advisorId,
         paymentDate: paymentDate,
         grossFCI: data?.GrossFCI,
