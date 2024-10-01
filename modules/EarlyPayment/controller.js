@@ -43,10 +43,10 @@ class EarlyPaymentController {
         limit,
         skip
       );
-      if (EarlyPayment) {
-        res.status(200).json(EarlyPayment);
+      if (EarlyPayment.length) {
+        return res.status(200).json(EarlyPayment);
       } else {
-        res.status(400).json({ error: 'EarlyPayment not found' });
+        return res.status(400).json({ error: 'EarlyPayment not found' });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -72,13 +72,15 @@ class EarlyPaymentController {
   async approveOrRejectEarlyPaymentById(req, res) {
     try {
       const id = req.params.id;
+      const adminName = req.user.firstName + ' ' + req.user.lastName;
       const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);
       if (earlyPayment) {
         const { status, note } = req.body;
         const updatedEarlyPayment = await EarlyPaymentService.updateByAdmin(
           id,
           { status, note },
-          earlyPayment
+          earlyPayment,
+          adminName
         );
         res.status(200).json(updatedEarlyPayment);
       } else {

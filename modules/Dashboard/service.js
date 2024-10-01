@@ -4,6 +4,7 @@ const SalesData = require('../SaleData/model.js');
 const EarlyPayments = require('../EarlyPayment/model.js');
 const RefundPayments = require('../RefundPayment/model.js');
 const CommissionSplit = require('../CommissionSplit/model.js');
+const ManagerNotification = require('../EarlyPayment/Notification.js');
 class errorLogsService {
   async getTopAdvisors() {
     try {
@@ -267,6 +268,21 @@ class errorLogsService {
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to calculate values for each advisor: ' + error.message);
+    }
+  }
+  async getNotificationOfManager(managerId) {
+    try {
+
+      const earlyPayments = await ManagerNotification.findAll({
+        where: { managerId },
+        order: [['createdAt', 'DESC']],
+      });
+      return earlyPayments; 
+    } catch (error) {
+      console.log('error', error);
+      throw new Error(
+        'Failed to calculate values for each advisor: ' + error.message
+      );
     }
   }
   

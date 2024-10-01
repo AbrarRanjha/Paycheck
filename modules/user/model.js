@@ -3,6 +3,7 @@
 
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js'); // Assuming db.js exports an initialized Sequelize instance
+const ManagerNotification = require('../EarlyPayment/Notification.js');
 
 const User = sequelize.define(
   'User',
@@ -63,5 +64,8 @@ const User = sequelize.define(
     timestamps: true,
   }
 );
-
+User.hasMany(ManagerNotification, { foreignKey: 'managerId' });
+ManagerNotification.belongsTo(User, {
+  foreignKey: 'managerId',
+});
 module.exports = User;

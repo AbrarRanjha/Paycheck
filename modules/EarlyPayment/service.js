@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const EarlyPaymentModel = require('./model.js');
 const Payout = require('../Payouts/model.js');
 const User = require('../User/model.js');
+const ManagerNotification = require('./Notification.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {
     try {
@@ -27,7 +28,7 @@ class EarlyPaymentModelService {
     }
   }
 
-  async updateByAdmin(id, data, earlyPayment) {
+  async updateByAdmin(id, data, earlyPayment, adminName) {
     try {
       console.log('data: ' + JSON.stringify(data));
 
@@ -52,6 +53,13 @@ class EarlyPaymentModelService {
         PayoutDetail.advances =
           PayoutDetail.advances + earlyPayment?.requestPaymentAmount;
         await PayoutDetail.save();
+        console.log('earlyPayment', earlyPayment);
+
+        await ManagerNotification.create({
+          date: new Date(),
+          note: `${adminName} Approved the request`,
+          managerId: earlyPayment?.managerId,
+        });
       } else {
         await EarlyPaymentModel.update(
           {
@@ -65,9 +73,16 @@ class EarlyPaymentModelService {
             returning: true,
           }
         );
+
+        await ManagerNotification.create({
+          date: new Date(),
+          note: `${adminName} rejected the request`,
+          managerId: earlyPayment?.managerId,
+        });
       }
 
       const res = await EarlyPaymentModel.findByPk(id);
+
       return res;
     } catch (error) {
       console.log('error: ' + error);
@@ -91,7 +106,7 @@ class EarlyPaymentModelService {
       const res = await EarlyPaymentModel.findAll({
         limit: limit,
         offset: skip,
-        include: [{ model: User }],
+        order: [['createdAt', 'DESC']],
       });
       return res;
     } catch (error) {

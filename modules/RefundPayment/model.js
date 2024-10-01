@@ -65,4 +65,5 @@ const RefundPayments = sequelize.define(
 );
 Employee.hasMany(RefundPayments, { foreignKey: 'managerId' });
 RefundPayments.belongsTo(Employee, { foreignKey: 'managerId' });
+
 module.exports = RefundPayments;

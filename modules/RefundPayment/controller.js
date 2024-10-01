@@ -72,13 +72,15 @@ class RefundPaymentController {
   async approveOrRejectRefundPaymentById(req, res) {
     try {
       const id = req.params.id;
+      const adminName = req.user.firstName + ' ' + req.user.lastName;
       const RefundPayment = await RefundPaymentService.getRefundPaymentById(id);
       if (RefundPayment) {
         const { status, note } = req.body;
         const updatedRefundPayment = await RefundPaymentService.updateByAdmin(
           id,
           { status, note },
-          RefundPayment
+          RefundPayment,
+          adminName
         );
         return res.status(200).json(updatedRefundPayment);
       } else {

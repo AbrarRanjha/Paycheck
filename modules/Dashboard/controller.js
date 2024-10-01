@@ -101,5 +101,14 @@ class ErrorLogsController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getNotifications(req, res) {
+    try {
+      const resp = await DashboardService.getNotificationOfManager(req.user.id);
+      return res.status(200).json({ notifications: resp });
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 module.exports = new ErrorLogsController();

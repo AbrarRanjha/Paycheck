@@ -1,5 +1,6 @@
 const { Router } =require ('express');
 const dashboardController =require ('./controller.js');
+const { authenticate } = require('../../utils/middleware.js');
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.get('/totalAvisor', dashboardController.getTotalAvisor);
 router.get('/productsType', dashboardController.getTotalProducts);
 router.get('/splitType', dashboardController.getTotalSplit);
 router.get('/advisorBase', dashboardController.getAdvisorBase);
+router.get('/notifications',authenticate, dashboardController.getNotifications);
 
 // You can define more routes related to users here
 module.exports = router
