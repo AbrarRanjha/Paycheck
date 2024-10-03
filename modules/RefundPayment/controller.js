@@ -43,11 +43,7 @@ class RefundPaymentController {
         limit,
         skip
       );
-      if (RefundPayment) {
-        res.status(200).json(RefundPayment);
-      } else {
-        res.status(400).json({ error: 'RefundPayment not found' });
-      }
+      return res.status(200).json(RefundPayment);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

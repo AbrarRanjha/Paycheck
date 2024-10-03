@@ -1,5 +1,10 @@
 /* eslint-disable no-undef */
-const { updateSaleDataFields, handlePercentagePayableUpdate, findSaleDataById, saveSaleData } = require('../../utils/saleDataCalculation.js');
+const {
+  updateSaleDataFields,
+  handlePercentagePayableUpdate,
+  findSaleDataById,
+  saveSaleData,
+} = require('../../utils/saleDataCalculation.js');
 const saleData = require('./model.js');
 class saleDataService {
   async getSaleDataById(id) {
@@ -29,11 +34,12 @@ class saleDataService {
       skip = parseInt(skip, 10);
       console.log('limit: ' + limit, skip);
 
-      const res = await saleData.findAll({
+      const SaleData = await saleData.findAll({
         limit: limit,
         offset: skip,
       });
-      return res;
+      const count = await saleData.count();
+      return { SaleData, count };
     } catch (error) {
       console.log('error', error);
 

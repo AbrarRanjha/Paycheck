@@ -103,12 +103,13 @@ class EarlyPaymentModelService {
       skip = parseInt(skip);
       console.log('limit: ' + limit, skip);
 
-      const res = await EarlyPaymentModel.findAll({
+      const resp = await EarlyPaymentModel.findAll({
         limit: limit,
         offset: skip,
         order: [['createdAt', 'DESC']],
       });
-      return res;
+      const count = await EarlyPaymentModel.count({});
+      return { resp, count };
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);

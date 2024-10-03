@@ -34,18 +34,22 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
-  async getUploadData() {
+  async getUploadData(limit, skip) {
     try {
+      limit = parseInt(limit, 10);
+      skip = parseInt(skip, 10);
       const upload = await Upload.findAll({
+        limit: limit,
+        offset: skip,
+
         include: [
           {
             model: SalesData,
           },
         ],
       });
-      console.log('Upload', upload);
-
-      return upload;
+      const count = await Upload.count();
+      return { upload, count };
     } catch (error) {
       console.log('error: ' + error);
 

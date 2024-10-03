@@ -7,6 +7,7 @@ dotenv.config();
 const registerAllRoutes = require('./modules/routes.js');
 const { sequelize } = require('./db.js');
 const { bootstrap } = require('./utils/bootstrap.js');
+const path = require('path');
 var app = express();
 
 sequelize
@@ -21,6 +22,7 @@ sequelize
     process.exit(1);
   });
 app.use(express.json());
+app.use('/static', express.static(path.join(__dirname, 'public/uploads')));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api', registerAllRoutes);

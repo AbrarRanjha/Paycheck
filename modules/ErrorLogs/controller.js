@@ -48,8 +48,11 @@ class ErrorLogsController {
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit, skip);
-      return res.status(200).json(ErrorLogs);
+      const { resp, count } = await ErrorLogsService.getAllErrorLogs(
+        limit,
+        skip
+      );
+      return res.status(200).json({ ErrorLogs: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

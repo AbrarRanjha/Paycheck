@@ -39,15 +39,11 @@ class EarlyPaymentController {
       if (!limit || !skip) {
         res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const EarlyPayment = await EarlyPaymentService.getAllEarlyPayment(
+      const { resp, count } = await EarlyPaymentService.getAllEarlyPayment(
         limit,
         skip
       );
-      if (EarlyPayment.length) {
-        return res.status(200).json(EarlyPayment);
-      } else {
-        return res.status(400).json({ error: 'EarlyPayment not found' });
-      }
+      return res.status(200).json({ EarlyPayment: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

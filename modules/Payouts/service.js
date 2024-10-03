@@ -13,7 +13,7 @@ class PayoutService {
     try {
       limit = parseInt(limit, 10);
       skip = parseInt(skip, 10);
-      const res = await Payout.findAll({
+      const resp = await Payout.findAll({
         limit: limit,
         offset: skip,
         include: [
@@ -22,7 +22,8 @@ class PayoutService {
           },
         ],
       });
-      return res;
+      const count = await Payout.count();
+      return { Payouts: resp, count };
     } catch (error) {
       console.log('error', error);
 
@@ -116,7 +117,7 @@ class PayoutService {
     try {
       const payoutRecord = await Payout.findByPk(id);
       Object.keys(data).forEach(key => {
-          payoutRecord[key] = data[key];
+        payoutRecord[key] = data[key];
       });
       const updatedPayoutData = await payoutRecord.save();
       return updatedPayoutData;
@@ -128,8 +129,6 @@ class PayoutService {
   }
   async calculateAdvisorPayout(payout) {
     try {
-    
-     
     } catch (error) {
       console.log('error', error);
       throw new Error(`Failed to process payout: ${error.message}`);

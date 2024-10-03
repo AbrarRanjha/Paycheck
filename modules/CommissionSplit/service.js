@@ -27,7 +27,6 @@ class commissionSplitService {
       });
       Object.keys(data).forEach(key => {
         if (key === 'splitPercentage') {
-         
           if (data.splitPercentage == 0) {
             const grossValue = existingSaleData.grossFCI || 0;
             commissionRecord.splitPercentage = 0;
@@ -38,15 +37,11 @@ class commissionSplitService {
             existingSaleData.percentagePayable = 100;
             PayoutRecord.advisorSplitPercentage = 0;
             PayoutRecord.advisorSplitAmount = 0;
-
-
           } else {
             commissionRecord.splitPercentage = data.splitPercentage;
             const grossValue = commissionRecord.grossFCI || 0; // Ensure grossValue is defined
-            commissionRecord.splitAmount = (
-              grossValue *
-              (data.splitPercentage / 100)
-            );
+            commissionRecord.splitAmount =
+              grossValue * (data.splitPercentage / 100);
             commissionRecord.FCIRecognition =
               grossValue - commissionRecord.splitAmount;
             const percentagePayable = 100 - data?.splitPercentage;
@@ -55,10 +50,8 @@ class commissionSplitService {
             existingSaleData.payable = payable;
             existingSaleData.FCIRecognition = payable;
             PayoutRecord.advisorSplitPercentage = data.splitPercentage;
-            PayoutRecord.advisorSplitAmount = (
-              grossValue *
-              (data.splitPercentage / 100)
-            );
+            PayoutRecord.advisorSplitAmount =
+              grossValue * (data.splitPercentage / 100);
           }
         } else {
           // Update other fields directly if they exist in the data object
@@ -89,11 +82,12 @@ class commissionSplitService {
       skip = parseInt(skip, 10);
       console.log('limit: ' + limit, skip);
 
-      const res = await commissionSplit.findAll({
+      const resp = await commissionSplit.findAll({
         limit: limit,
         offset: skip,
       });
-      return res;
+      const count = await commissionSplit.count({});
+      return { resp, count };
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get commissionSplit: ' + error.message);

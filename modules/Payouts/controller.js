@@ -42,12 +42,12 @@ class PayoutController {
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const payoutResponse = await getAdvisorPayoutPeriod(
+      const { resp, count } = await getAdvisorPayoutPeriod(
         limit,
         skip,
         selectedPeriod
       );
-      return res.status(200).json(payoutResponse);
+      return res.status(200).json({ payoutsArray: resp, count: count });
     } catch (error) {
       console.log('error', error);
       return res.status(500).json({ error: error.message });
@@ -86,7 +86,7 @@ module.exports = new PayoutController();
 async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
   try {
     let payoutsArray = [];
-    const Payouts = await PayoutService.getAllPayout(limit, skip);
+    const { Payouts, count } = await PayoutService.getAllPayout(limit, skip);
     const currentWeek = moment().week();
     const currentMonth = moment().month();
 
@@ -96,7 +96,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
         totalAdvisorSplit = 0,
         totalDeduction = 0,
         netPayout = 0;
-        LgMargin = 0;
+      LgMargin = 0;
       payout.advisorDetails.forEach(detail => {
         const detailCreatedAt = moment(detail.date);
         if (selectedPeriod === 'weekly') {
@@ -136,7 +136,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
         advisor: payout,
       });
     }
-    return payoutsArray;
+    return { resp: payoutsArray, count };
   } catch (error) {
     console.log('error: ' + error);
     throw new Error('Error occurred', error);

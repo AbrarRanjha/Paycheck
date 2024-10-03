@@ -97,12 +97,13 @@ class RefundPaymentModelService {
       limit = parseInt(limit);
       skip = parseInt(skip);
       console.log('limit: ' + limit, skip);
-      const res = await RefundPaymentModel.findAll({
+      const RefundPayment = await RefundPaymentModel.findAll({
         limit: limit,
         offset: skip,
         order: [['createdAt', 'DESC']],
       });
-      return res;
+      const count = await RefundPaymentModel.count();
+      return { RefundPayment, count };
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get RefundPaymentModel: ' + error.message);

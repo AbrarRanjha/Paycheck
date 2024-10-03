@@ -14,8 +14,8 @@ class errorLogsService {
       const res = await ErrorLogs.update({ status }, { where: { id } });
       return res;
     } catch (error) {
-      console.log("Failed to update errorLogs: " + error);
-      
+      console.log('Failed to update errorLogs: ' + error);
+
       throw new Error('Failed to get errorLogs: ' + error.message);
     }
   }
@@ -25,11 +25,12 @@ class errorLogsService {
       skip = parseInt(skip, 10);
       console.log('limit: ' + limit, skip);
 
-      const res = await ErrorLogs.findAll({
+      const resp = await ErrorLogs.findAll({
         limit: limit,
         offset: skip,
       });
-      return res;
+      const count = await ErrorLogs.count();
+      return { resp, count };
     } catch (error) {
       console.log('error', error);
 
