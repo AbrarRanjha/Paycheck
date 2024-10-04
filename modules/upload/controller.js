@@ -33,12 +33,9 @@ class UploadController {
   }
   async getUploadAllFiles(req, res) {
     try {
-      const { limit, skip } = req.query;
-      if (!limit || !skip) {
-        return res.status(400).json({ error: 'Limit or skip is undefined' });
-      }
-      const { upload, count } = await UploadService.getUploadData(limit, skip);
-      return res.status(200).json({ upload, count });
+    
+      const upload = await UploadService.getUploadData();
+      return res.status(200).json(upload);
     } catch (error) {
       console.log('error: ' + error);
 
@@ -84,6 +81,8 @@ class UploadController {
         .status(200)
         .json({ message: 'Excel file processed successfully', uploadss });
     } catch (error) {
+      console.log('error', error);
+
       return res.status(400).json({
         error: 'Error processing the Excel file',
         details: error.message,

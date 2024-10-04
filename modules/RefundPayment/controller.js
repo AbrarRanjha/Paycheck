@@ -39,11 +39,11 @@ class RefundPaymentController {
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const RefundPayment = await RefundPaymentService.getAllRefundPayment(
+      const { RefundPayment } = await RefundPaymentService.getAllRefundPayment(
         limit,
         skip
       );
-      return res.status(200).json(RefundPayment);
+      return res.status(200).json({ RefundPayment });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

@@ -34,25 +34,20 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
-  async getUploadData(limit, skip) {
+  async getUploadData() {
     try {
-      limit = parseInt(limit, 10);
-      skip = parseInt(skip, 10);
-      const upload = await Upload.findAll({
-        limit: limit,
-        offset: skip,
 
+      const upload = await Upload.findAll({
+    
         include: [
           {
             model: SalesData,
           },
         ],
       });
-      const count = await Upload.count();
-      return { upload, count };
+      return upload;
     } catch (error) {
       console.log('error: ' + error);
-
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
@@ -285,10 +280,10 @@ class uploadService {
     }
 
     // Validate premium
-    if (typeof data?.Premium !== 'number') {
+    if (!data?.Premium || typeof data?.Premium !== 'number') {
       errors.push({
         transactionID: data?.IORef || 'N/A',
-        errorDescription: 'Invalid premium',
+        errorDescription: 'Missing or invalid premium',
         errorLocation: `${errorLocation}.premium`,
         status: 'Pending',
         validationKey: 'premium',
@@ -296,10 +291,10 @@ class uploadService {
     }
 
     // Validate payable
-    if (typeof data?.Payable !== 'number') {
+    if (!data?.Payable || typeof data?.Payable !== 'number') {
       errors.push({
         transactionID: data?.IORef || 'N/A',
-        errorDescription: 'Invalid payable',
+        errorDescription: 'Missing or invalid payable',
         errorLocation: `${errorLocation}.payable`,
         status: 'Pending',
         validationKey: 'payable',
@@ -307,10 +302,13 @@ class uploadService {
     }
 
     // Validate percentagePayable
-    if (typeof data?.PercentagePayable !== 'number') {
+    if (
+      !data?.PercentagePayable ||
+      typeof data?.PercentagePayable !== 'number'
+    ) {
       errors.push({
         transactionID: data?.IORef || 'N/A',
-        errorDescription: 'Invalid percentagePayable',
+        errorDescription: 'Missing or invalid percentagePayable',
         errorLocation: `${errorLocation}.percentagePayable`,
         status: 'Pending',
         validationKey: 'percentagePayable',
@@ -318,7 +316,7 @@ class uploadService {
     }
 
     // Validate cashType
-    if (data?.CashType && typeof data.CashType !== 'string') {
+    if (data?.CashType || typeof data.CashType !== 'string') {
       errors.push({
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid cashType',
@@ -329,7 +327,7 @@ class uploadService {
     }
 
     // Validate cashMatchId
-    if (data?.CashMatchId && typeof data.CashMatchId !== 'number') {
+    if (!data?.CashMatchId || typeof data.CashMatchId !== 'number') {
       errors.push({
         transactionID: data?.IORef || 'N/A',
         errorDescription: 'Invalid cashMatchId',
