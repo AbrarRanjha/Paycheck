@@ -86,7 +86,7 @@ class commissionSplitService {
         limit: limit,
         offset: skip,
       });
-      const count = await commissionSplit.count({});
+      const count = await commissionSplit.count();
       return { resp, count };
     } catch (error) {
       console.log('error', error);

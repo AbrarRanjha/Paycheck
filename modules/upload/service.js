@@ -36,9 +36,7 @@ class uploadService {
   }
   async getUploadData() {
     try {
-
       const upload = await Upload.findAll({
-    
         include: [
           {
             model: SalesData,
@@ -46,6 +44,26 @@ class uploadService {
         ],
       });
       return upload;
+    } catch (error) {
+      console.log('error: ' + error);
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
+  async getUploadDataWithCounts(limit, skip) {
+    try {
+      limit = parseInt(limit, 10);
+      skip = parseInt(skip, 10);
+      const upload = await Upload.findAll({
+        limit: limit,
+        offset: skip,
+        include: [
+          {
+            model: SalesData,
+          },
+        ],
+      });
+      const count = await Upload.count();
+      return { upload, count };
     } catch (error) {
       console.log('error: ' + error);
       throw new Error('Failed to get upload: ' + error.message);

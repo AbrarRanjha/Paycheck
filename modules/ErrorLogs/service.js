@@ -48,7 +48,8 @@ class errorLogsService {
         offset: skip,
         include: [{ model: ErrorLogs }],
       });
-      return res;
+      const count = await SalesData.count();
+      return { validations: res, count };
     } catch (error) {
       console.log('error', error);
 

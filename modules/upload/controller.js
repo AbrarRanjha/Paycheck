@@ -33,9 +33,15 @@ class UploadController {
   }
   async getUploadAllFiles(req, res) {
     try {
-    
-      const upload = await UploadService.getUploadData();
-      return res.status(200).json(upload);
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
+        return res.status(400).json({ error: 'Limit or skip is undefined' });
+      }
+      const { upload, count } = await UploadService.getUploadDataWithCounts(
+        limit,
+        skip
+      );
+      return res.status(200).json({ upload, count });
     } catch (error) {
       console.log('error: ' + error);
 

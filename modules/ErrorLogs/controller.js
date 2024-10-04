@@ -63,14 +63,14 @@ class ErrorLogsController {
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const ErrorLogs = await ErrorLogsService.getAllErrorLogsSale(limit, skip);
-      if (ErrorLogs) {
-        return res.status(200).json(ErrorLogs);
-      } else {
-        return res.status(404).json({ error: 'ErrorLogs not found' });
-      }
+      const { validations, count } = await ErrorLogsService.getAllErrorLogsSale(
+        limit,
+        skip
+      );
+
+      return res.status(200).json({ validations, count });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   }
 }
