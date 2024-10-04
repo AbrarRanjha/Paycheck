@@ -53,7 +53,7 @@ class RefundPaymentModelService {
         await PayoutDetail.save();
         await ManagerNotification.create({
           date: new Date(),
-          note: `${adminName} Approved the request`,
+          note: `${adminName} Approved the Refund request`,
           managerId: RefundPayment?.managerId,
         });
       } else {

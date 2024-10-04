@@ -57,7 +57,7 @@ class EarlyPaymentModelService {
 
         await ManagerNotification.create({
           date: new Date(),
-          note: `${adminName} Approved the request`,
+          note: `${adminName} Approved the Early Payment request`,
           managerId: earlyPayment?.managerId,
         });
       } else {
