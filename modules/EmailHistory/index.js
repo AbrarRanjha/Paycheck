@@ -12,6 +12,5 @@ router.get('/', authenticate, emailHistoryController.getAllEmailHistories);
 router.post('/', upload.single('file'), emailHistoryController.createEmailHistory);
 router.put('/:id', emailHistoryController.updateEmailHistory);
 router.delete('/:id', emailHistoryController.deleteEmailHistory);
-router.post('/pdf', emailHistoryController.createEmailHistoryPdf);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const EarlyPaymentModel = require('./model.js');
 const Payout = require('../Payouts/model.js');
-const User = require('../User/model.js');
+const User = require('../user/model.js');
 const ManagerNotification = require('./Notification.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {

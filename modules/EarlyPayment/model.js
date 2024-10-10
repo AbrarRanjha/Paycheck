@@ -2,7 +2,7 @@
 
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
-const Employee = require('../User/model.js');
+const Employee = require('../user/model.js');
 const ManagerNotification = require('./Notification.js');
 
 const EarlyPayments = sequelize.define(
@@ -51,7 +51,7 @@ const EarlyPayments = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-   
+
     approveDate: {
       type: DataTypes.DATE,
       allowNull: true,

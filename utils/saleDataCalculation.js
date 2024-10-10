@@ -100,7 +100,9 @@ const handleNonZeroPercentagePayable = async (
   data
 ) => {
   const grossFCI = existingSaleData.grossFCI || 0;
-  existingSaleData.percentagePayable = data.percentagePayable;
+  existingSaleData.percentagePayable = parseFloat(
+    data.percentagePayable.toFixed(2)
+  );
   existingSaleData.FCIRecognition = calculateFCIRecognition(
     grossFCI,
     data.percentagePayable
