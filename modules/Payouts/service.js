@@ -30,6 +30,23 @@ class PayoutService {
       throw new Error('Failed to get Payout: ' + error.message);
     }
   }
+  async getAllPayouts() {
+    try {
+      const resp = await Payout.findAll({
+        include: [
+          {
+            model: advisorDetail,
+          },
+        ],
+      });
+      const count = await Payout.count();
+      return { Payouts: resp, count };
+    } catch (error) {
+      console.log('error', error);
+
+      throw new Error('Failed to get Payout: ' + error.message);
+    }
+  }
   async updatePayoutById(id, data) {
     try {
       console.log('data: ' + typeof data?.advisorSplitPercentage);

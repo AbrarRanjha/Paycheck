@@ -93,6 +93,15 @@ class commissionSplitService {
       throw new Error('Failed to get commissionSplit: ' + error.message);
     }
   }
+  async getAllCommissionSplitss() {
+    try {
+      const resp = await commissionSplit.findAll();
+      return resp;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get commissionSplit: ' + error.message);
+    }
+  }
 }
 
 module.exports = new commissionSplitService();

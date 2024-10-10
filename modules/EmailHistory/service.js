@@ -51,6 +51,22 @@ class EmailHistoryService {
       throw new Error('Failed to create Email History: ' + error.message);
     }
   }
+  async EmailHistoryPdf(data) {
+    try {
+      const admin = await User.findOne({
+        where: { email: data.receipentEmail },
+      });
+      if (admin && admin.role == 'admin') {
+        const newHistory = await EmailHistory.create(data);
+        return newHistory;
+      } else {
+        throw new Error('receipent email is not correct ');
+      }
+    } catch (error) {
+      console.log('error creating Email History: ' + error);
+      throw new Error('Failed to create Email History: ' + error.message);
+    }
+  }
 
   async updateEmailHistory(id, data) {
     try {

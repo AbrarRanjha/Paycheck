@@ -2,7 +2,7 @@
 const RefundPaymentService = require('./service.js');
 
 class RefundPaymentController {
-  constructor() {}
+  constructor() { }
   async createRefundPaymentRequest(req, res) {
     try {
       const {
@@ -41,7 +41,16 @@ class RefundPaymentController {
       }
       const { RefundPayment, count } =
         await RefundPaymentService.getAllRefundPayment(limit, skip);
-      return res.status(200).json({ RefundPayment,count });
+      return res.status(200).json({ RefundPayment, count });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getAllRefundPayment(req, res) {
+    try {
+      const { RefundPayment, count } =
+        await RefundPaymentService.getAllRefundPayments();
+      return res.status(200).json({ RefundPayment, count });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

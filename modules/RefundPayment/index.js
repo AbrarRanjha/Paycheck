@@ -21,5 +21,6 @@ router.post(
 );
 router.get('/:id', RefundPaymentController.getRefundPaymentById);
 router.get('/', RefundPaymentController.getRefundPayment);
+router.post('/all', RefundPaymentController.getAllRefundPayment);
 
 module.exports = router;

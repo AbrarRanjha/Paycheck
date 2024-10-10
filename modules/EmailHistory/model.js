@@ -49,6 +49,10 @@ const EmailHistory = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    pdfFile: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     footer: {
       type: DataTypes.STRING,
       allowNull: true,

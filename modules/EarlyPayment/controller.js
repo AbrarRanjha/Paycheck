@@ -2,7 +2,7 @@
 const EarlyPaymentService = require('./service.js');
 
 class EarlyPaymentController {
-  constructor() {}
+  constructor() { }
   async createEarlyPaymentRequest(req, res) {
     try {
       const {
@@ -43,6 +43,14 @@ class EarlyPaymentController {
         limit,
         skip
       );
+      return res.status(200).json({ EarlyPayment: resp, count: count });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getAllEarlyPayment(req, res) {
+    try {
+      const { resp, count } = await EarlyPaymentService.getAllEarlyPayments();
       return res.status(200).json({ EarlyPayment: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });

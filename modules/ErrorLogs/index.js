@@ -6,6 +6,7 @@ const router = Router();
 router.get('/:id', errorLogsController.getErrorLogsById);
 router.put('/', errorLogsController.updateErrorLogsById);
 router.get('/', errorLogsController.getErrorLogs);
+router.post('/all', errorLogsController.getAllErrorLogs);
 router.post('/validation', errorLogsController.getErrorLogsWithSaleData);
 
 // You can define more routes related to users here

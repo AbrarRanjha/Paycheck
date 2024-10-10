@@ -1,7 +1,7 @@
 const ErrorLogsService = require('./service.js');
 
 class ErrorLogsController {
-  constructor() {}
+  constructor() { }
   async getErrorLogsById(req, res) {
     try {
       const id = req.params.id;
@@ -52,6 +52,14 @@ class ErrorLogsController {
         limit,
         skip
       );
+      return res.status(200).json({ ErrorLogs: resp, count: count });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getAllErrorLogs(req, res) {
+    try {
+      const { resp, count } = await ErrorLogsService.getAllErrorLogss();
       return res.status(200).json({ ErrorLogs: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });

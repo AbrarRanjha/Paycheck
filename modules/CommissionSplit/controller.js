@@ -1,7 +1,7 @@
 const CommissionSplitService = require('./service.js');
 
 class CommissionSplitController {
-  constructor() {}
+  constructor() { }
   async getCommissionSplitById(req, res) {
     try {
       const id = req.params.id;
@@ -25,6 +25,17 @@ class CommissionSplitController {
       const { resp, count } =
         await CommissionSplitService.getAllCommissionSplit(limit, skip);
       return res.status(200).json({ CommissionSplit: resp, count: count });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getALLCommissionSplit(req, res) {
+    try {
+      console.log("getALLCommissionSplit");
+
+      const resp =
+        await CommissionSplitService.getAllCommissionSplitss();
+      return res.status(200).json({ CommissionSplit: resp });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

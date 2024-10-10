@@ -119,15 +119,15 @@ class uploadService {
         clientName: data?.ClientName,
         ...(isAdviser
           ? {
-              advisorId: data?.SellingAdviserName?.trim()
-                .toLowerCase()
-                .replace(/\s+/g, ''),
-              advisorName: data?.SellingAdviserName,
-            }
+            advisorId: data?.SellingAdviserName?.trim()
+              .toLowerCase()
+              .replace(/\s+/g, ''),
+            advisorName: data?.SellingAdviserName,
+          }
           : {
-              splitPartnerId: '',
-              splitPartnerName: data?.SellingAdviserName,
-            }),
+            splitPartnerId: '',
+            splitPartnerName: data?.SellingAdviserName,
+          }),
       };
 
       return await CommissionSplit.create(splitData);
@@ -193,7 +193,7 @@ class uploadService {
   async SaveErrorlogsAndValidation(saleDataID, data) {
     const errors = [];
     const errorLocation = 'CommisonData';
-
+    await ErrorLogs.destroy();
     // Validate transactionID
     if (typeof data.IORef !== 'string') {
       errors.push({
@@ -205,7 +205,6 @@ class uploadService {
       });
     }
 
-    // Validate clientName
     if (!data?.ClientName || typeof data.ClientName !== 'string') {
       errors.push({
         transactionID: data?.IORef || 'N/A',
@@ -216,7 +215,6 @@ class uploadService {
       });
     }
 
-    // Validate startDate
     if (!data?.StartDate || isNaN(new Date(data.StartDate))) {
       errors.push({
         transactionID: data?.IORef || 'N/A',

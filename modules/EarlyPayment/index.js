@@ -21,5 +21,6 @@ router.post(
 );
 router.get('/:id', EarlyPaymentController.getEarlyPaymentById);
 router.get('/', EarlyPaymentController.getEarlyPayment);
+router.post('/all', EarlyPaymentController.getAllEarlyPayment);
 
 module.exports = router;

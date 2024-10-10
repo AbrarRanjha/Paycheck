@@ -109,6 +109,18 @@ class RefundPaymentModelService {
       throw new Error('Failed to get RefundPaymentModel: ' + error.message);
     }
   }
+  async getAllRefundPayments() {
+    try {
+      const RefundPayment = await RefundPaymentModel.findAll({
+        order: [['createdAt', 'DESC']],
+      });
+      const count = await RefundPaymentModel.count();
+      return { RefundPayment, count };
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get RefundPaymentModel: ' + error.message);
+    }
+  }
 }
 
 module.exports = new RefundPaymentModelService();

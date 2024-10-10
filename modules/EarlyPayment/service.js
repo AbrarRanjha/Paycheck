@@ -97,15 +97,9 @@ class EarlyPaymentModelService {
       throw new Error('Failed to create employee: ' + error.message);
     }
   }
-  async getAllEarlyPayment(limit, skip) {
+  async getAllEarlyPayments() {
     try {
-      limit = parseInt(limit);
-      skip = parseInt(skip);
-      console.log('limit: ' + limit, skip);
-
       const resp = await EarlyPaymentModel.findAll({
-        limit: limit,
-        offset: skip,
         order: [['createdAt', 'DESC']],
       });
       const count = await EarlyPaymentModel.count({});
