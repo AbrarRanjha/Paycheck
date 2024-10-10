@@ -13,9 +13,13 @@ class EmailHistoryService {
 
   async getAllEmailHistories() {
     try {
-      const histories = await EmailHistory.findAll();
+      const histories = await EmailHistory.findAll({
+        order: [['createdAt', 'DESC']],
+      });
       return histories;
     } catch (error) {
+      console.log('error', error);
+
       throw new Error('Failed to get Email Histories: ' + error.message);
     }
   }
@@ -23,6 +27,7 @@ class EmailHistoryService {
     try {
       const histories = await EmailHistory.findAll({
         where: { senderEmail: email },
+        order: [['createdAt', 'DESC']]
       });
       return histories;
     } catch (error) {

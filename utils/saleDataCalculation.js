@@ -84,10 +84,10 @@ const handleZeroGrossFCI = async (
   existingSaleData.FCIRecognition = 0;
   existingSaleData.payable = 0;
   commissionRecord.splitPercentage = 0;
-  PayoutRecord.grossFCI=0,
-  PayoutRecord.advisorSplitAmount=0,
-  PayoutRecord.advisorSplitPercentage=0,
-  commissionRecord.splitAmount = 0;
+  (PayoutRecord.grossFCI = 0),
+    (PayoutRecord.advisorSplitAmount = 0),
+    (PayoutRecord.advisorSplitPercentage = 0),
+    (commissionRecord.splitAmount = 0);
   commissionRecord.FCIRecognition = 0;
   await existingSaleData.save();
   await commissionRecord.save();
@@ -138,7 +138,7 @@ const handleNonZeroGrossFCI = async (
   const splitPercentage = 100 - existingSaleData?.percentagePayable;
   commissionRecord.splitPercentage = splitPercentage;
   PayoutRecord.advisorSplitPercentage = splitPercentage;
-  const newSplitAmount = calculateSplitAmount(grossFCI, splitPercentage);  
+  const newSplitAmount = calculateSplitAmount(grossFCI, splitPercentage);
   commissionRecord.splitAmount = newSplitAmount;
   PayoutRecord.advisorSplitAmount = newSplitAmount;
   commissionRecord.grossFCI = grossFCI;
@@ -171,7 +171,6 @@ const updateSaleDataFields = (existingSaleData, data) => {
     }
   });
 };
-
 
 const saveSaleData = async existingSaleData => {
   return await existingSaleData.save();

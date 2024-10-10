@@ -65,6 +65,13 @@ class UploadController {
 
       // Step 2: Validate the data and insert it into the database
       const results = [];
+      const checkFileName =
+        await UploadService.checkingFileName(originalFileName);
+      if (checkFileName) {
+        console.log('Checking fileName: ' + originalFileName);
+
+        return res.status(400).json({ error: 'File already uploaded' });
+      }
       const uploadData = await UploadService.saveUploadData(
         originalFileName,
         category
@@ -72,13 +79,18 @@ class UploadController {
       for (const data of jsonData) {
         console.log('data: ' + JSON.stringify(data));
         if (data?.IORef) {
-          const saleData = await UploadService.saveSaleData(
-            data,
-            uploadData?.id
+          const checktransaction = await UploadService.checkingTransaction(
+            data?.IORef
           );
-          await UploadService.calculateSplitCommission(saleData?.id, data);
-          await UploadService.calculateAdvisorPayout(saleData?.id, data);
-          await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          if (!checktransaction) {
+            const saleData = await UploadService.saveSaleData(
+              data,
+              uploadData?.id
+            );
+            await UploadService.calculateSplitCommission(saleData?.id, data);
+            await UploadService.calculateAdvisorPayout(saleData?.id, data);
+            await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          }
           results.push(data);
         }
       }

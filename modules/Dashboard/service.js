@@ -79,7 +79,11 @@ class errorLogsService {
         data = await SalesData.findAll({
           attributes: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%m'),
+              Sequelize.fn(
+                'DATE_FORMAT',
+                Sequelize.col('paymentDate'),
+                '%Y-%m'
+              ),
               'month',
             ], // This groups by year-month
             [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
@@ -87,7 +91,11 @@ class errorLogsService {
           group: ['month'],
           order: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%m'),
+              Sequelize.fn(
+                'DATE_FORMAT',
+                Sequelize.col('paymentDate'),
+                '%Y-%m'
+              ),
               'ASC',
             ],
           ],
@@ -96,7 +104,11 @@ class errorLogsService {
         data = await SalesData.findAll({
           attributes: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%u'),
+              Sequelize.fn(
+                'DATE_FORMAT',
+                Sequelize.col('paymentDate'),
+                '%Y-%u'
+              ),
               'week',
             ], // This groups by year-week
             [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
@@ -104,7 +116,11 @@ class errorLogsService {
           group: ['week'],
           order: [
             [
-              Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%u'),
+              Sequelize.fn(
+                'DATE_FORMAT',
+                Sequelize.col('paymentDate'),
+                '%Y-%u'
+              ),
               'ASC',
             ],
           ],
@@ -213,45 +229,50 @@ class errorLogsService {
       const totalProductsAll = await this.totalProducts(); // Total Products
       const totalSplitsAll = await this.totalSplits(); // Total Splits
       const totalAdvisorsAll = await this.totalAdvisor(); // Total Advisors
-  
+
       // Get all unique advisors
       const advisors = await SalesData.findAll({
         attributes: ['advisorName'],
         group: ['advisorName'],
         raw: true,
       });
-  
+
       // Initialize an array to store results for each advisor
       const advisorResults = [];
-  
+
       // Loop through each advisor and calculate individual metrics
       for (const advisor of advisors) {
         const advisorName = advisor.advisorName;
-  
+
         // Get total commission for the advisor
         const totalCommission = await SalesData.sum('FCIRecognition', {
           where: { advisorName },
         });
-  
+
         // Get product count for the advisor
         const productCount = await SalesData.count({
           where: { advisorName },
           distinct: true,
           col: 'planType',
         });
-  
+
         // Get split count for the advisor
         const splitCount = await CommissionSplit.count({
           where: { advisorName }, // Assuming `CommissionSplit` also has `advisorName`
           distinct: true,
           col: 'splitType',
         });
-  
+
         // Calculate percentages
-        const commissionPercentage = totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0;
-        const productPercentage = totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0;
-        const splitPercentage = totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0;
-  
+        const commissionPercentage =
+          totalCommissionAll > 0
+            ? (totalCommission / totalCommissionAll) * 100
+            : 0;
+        const productPercentage =
+          totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0;
+        const splitPercentage =
+          totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0;
+
         // Push the results for this advisor
         advisorResults.push({
           advisorName,
@@ -263,21 +284,8 @@ class errorLogsService {
           splitPercentage: splitPercentage,
         });
       }
-  
-      return advisorResults; // Return results for each advisor
-    } catch (error) {
-      console.log('error', error);
-      throw new Error('Failed to calculate values for each advisor: ' + error.message);
-    }
-  }
-  async getNotificationOfManager(managerId) {
-    try {
 
-      const earlyPayments = await ManagerNotification.findAll({
-        where: { managerId },
-        order: [['createdAt', 'DESC']],
-      });
-      return earlyPayments; 
+      return advisorResults; // Return results for each advisor
     } catch (error) {
       console.log('error', error);
       throw new Error(
@@ -285,8 +293,48 @@ class errorLogsService {
       );
     }
   }
-  
-  
+  async getNotificationOfManager(managerId) {
+    try {
+      const earlyPayments = await ManagerNotification.findAll({
+        where: { managerId },
+        order: [['createdAt', 'DESC']],
+      });
+      return earlyPayments;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error(
+        'Failed to calculate values for each advisor: ' + error.message
+      );
+    }
+  }
+  async getUnSeenNotificationLength(managerId) {
+    try {
+      const earlyPayments = await ManagerNotification.count({
+        where: { managerId, seen: false },
+        order: [['createdAt', 'DESC']],
+      });
+      return earlyPayments;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error(
+        'Failed to calculate values for each advisor: ' + error.message
+      );
+    }
+  }
+  async updateUnSeenNotificationLength(id) {
+    try {
+      const earlyPayments = await ManagerNotification.update(
+        { seen: true },
+        { where: { id } }
+      );
+      return earlyPayments;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error(
+        'Failed to calculate values for each advisor: ' + error.message
+      );
+    }
+  }
 }
 
 module.exports = new errorLogsService();

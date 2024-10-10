@@ -110,5 +110,29 @@ class ErrorLogsController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getUnSeenNotifications(req, res) {
+    try {
+      const resp = await DashboardService.getUnSeenNotificationLength(
+        req.user.id
+      );
+      return res.status(200).json({ notifications: resp });
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async updateUnSeenNotifications(req, res) {
+    try {
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        await DashboardService.updateUnSeenNotificationLength(element);
+      }
+      return res.status(200).json('update notifications');
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 module.exports = new ErrorLogsController();

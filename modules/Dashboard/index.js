@@ -17,6 +17,8 @@ router.get('/productsType', dashboardController.getTotalProducts);
 router.get('/splitType', dashboardController.getTotalSplit);
 router.get('/advisorBase', dashboardController.getAdvisorBase);
 router.get('/notifications',authenticate, dashboardController.getNotifications);
+router.get('/unseenNotifications',authenticate, dashboardController.getUnSeenNotifications);
+router.put('/updateNotifications',authenticate, dashboardController.updateUnSeenNotifications);
 
 // You can define more routes related to users here
 module.exports = router

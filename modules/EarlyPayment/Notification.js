@@ -19,6 +19,10 @@ const ManagerNotification = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    seen:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }
  
   },
   {

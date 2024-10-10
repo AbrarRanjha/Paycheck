@@ -144,6 +144,13 @@ class EmployeeController {
         ...data,
         profileImageUrl: imageUrl,
       });
+      console.log("employee updated", JSON.stringify(employee));
+      
+      await EmployeeService.updateEmailHistory(
+        employee?.email,
+        employee.firstName,
+        employee.lastName
+      );
       if (employee) {
         res.status(200).json(employee);
       } else {

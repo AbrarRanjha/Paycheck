@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const Employee = require('./model.js');
 const { Op } = require('sequelize');
 const { sendOtpEmail } = require('../../utils/utils.js');
+const EmailHistory = require('../EmailHistory/model.js');
 
 class EmployeeService {
   async createEmployee(employeeData) {
@@ -24,7 +25,7 @@ class EmployeeService {
       throw new Error('Failed to get employee: ' + error.message);
     }
   }
-  
+
   async updateEmployeeById(id, data) {
     try {
       console.log('data: ' + JSON.stringify(data));
@@ -81,6 +82,19 @@ class EmployeeService {
       throw new Error('Failed to get employee by email: ' + error.message);
     }
   }
+  async updateEmailHistory(senderEmail, firstName, lastName) {
+    try {
+      console.log('firstName: ' + firstName, 'lastName: ' + lastName);
+      const senderName = firstName + ' ' + lastName;
+      const employee = await EmailHistory.update(
+        { senderName }, // Fields to update
+        { where: { senderEmail } }
+      );
+      return;
+    } catch (error) {
+      throw new Error('Failed to get employee by email: ' + error.message);
+    }
+  }
 
   async generateOtp(email) {
     const user = await Employee.findOne({ where: { email } });
@@ -92,7 +106,7 @@ class EmployeeService {
     user.resetToken = otp;
     user.resetTokenExpiry = otpExpiry;
     await user.save();
-    await sendOtpEmail(user?.firstName,user?.email, otp);
+    await sendOtpEmail(user?.firstName, user?.email, otp);
     return user;
   }
   async verifyOtp(email, otp) {
@@ -110,7 +124,7 @@ class EmployeeService {
       }
       user.resetToken = null;
       user.resetTokenExpiry = null;
-      user.isVerified = true
+      user.isVerified = true;
       await user.save();
       return true;
     } catch (error) {

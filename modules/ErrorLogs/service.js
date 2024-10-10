@@ -28,6 +28,7 @@ class errorLogsService {
       const resp = await ErrorLogs.findAll({
         limit: limit,
         offset: skip,
+        include: [{ model: SalesData }],
       });
       const count = await ErrorLogs.count();
       return { resp, count };

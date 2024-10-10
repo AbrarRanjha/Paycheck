@@ -83,6 +83,22 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+  async checkingFileName(fileName) {
+    try {
+      const exist = await Upload.findOne({ where: { fileName } });
+      return exist;
+    } catch (error) {
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
+  async checkingTransaction(transactionID) {
+    try {
+      const exist = await SalesData.findOne({ where: { transactionID } });
+      return exist;
+    } catch (error) {
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
   async calculateSplitCommission(saleDataID, data) {
     try {
       console.log(`saleDataID: ${saleDataID}`);
@@ -93,12 +109,12 @@ class uploadService {
       const splitData = {
         transactionID: data?.IORef,
         saleDataId: saleDataID,
-        splitPercentage: splitPercentage,
-        splitAmount: splitAmount,
-        grossFCI: data?.GrossFCI,
+        splitPercentage: parseFloat(splitPercentage.toFixed(2)),
+        splitAmount: parseFloat(splitAmount.toFixed(2)),
+        grossFCI: parseFloat(data?.GrossFCI.toFixed(2)),
         premium: data?.Premium,
         frequency: data?.Frequency,
-        FCIRecognition: data?.FCIRecognition,
+        FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
         splitType: data?.RecipientType,
         clientName: data?.ClientName,
         ...(isAdviser
@@ -145,10 +161,10 @@ class uploadService {
         await advisorDetail.create({
           PayoutID: advisor.id,
           transactionID: data?.IORef,
-          advisorSplitPercentage: splitPercentage,
-          advisorSplitAmount: splitAmount,
-          FCIRecognition: data?.FCIRecognition,
-          grossFCI: data.GrossFCI,
+          advisorSplitPercentage: parseFloat(splitPercentage.toFixed(2)),
+          advisorSplitAmount: parseFloat(splitAmount.toFixed(2)),
+          FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
+          grossFCI: parseFloat(data.GrossFCI.toFixed(2)),
           date: paymentDate,
         });
       } else {
@@ -161,10 +177,10 @@ class uploadService {
         await advisorDetail.create({
           PayoutID: Payouts.id,
           transactionID: data?.IORef,
-          advisorSplitAmount: splitAmount,
-          advisorSplitPercentage: splitPercentage,
-          FCIRecognition: data?.FCIRecognition,
-          grossFCI: data.GrossFCI,
+          advisorSplitAmount: parseFloat(splitAmount.toFixed(2)),
+          advisorSplitPercentage: parseFloat(splitPercentage.toFixed(2)),
+          FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
+          grossFCI: parseFloat(data.GrossFCI.toFixed(2)),
           date: paymentDate,
         });
       }
@@ -334,10 +350,10 @@ class uploadService {
     }
 
     // Validate cashType
-    if (data?.CashType || typeof data.CashType !== 'string') {
+    if (!data?.CashType) {
       errors.push({
         transactionID: data?.IORef || 'N/A',
-        errorDescription: 'Invalid cashType',
+        errorDescription: 'missing cashType',
         errorLocation: `${errorLocation}.cashType`,
         status: 'Pending',
         validationKey: 'cashType',
@@ -404,12 +420,12 @@ class uploadService {
         advisorName: data?.SellingAdviserName,
         advisorId,
         paymentDate: paymentDate,
-        grossFCI: data?.GrossFCI,
-        FCIRecognition: data?.FCIRecognition,
+        grossFCI: parseFloat(data?.GrossFCI.toFixed(2)),
+        FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
         cashType: data?.CashType,
         planType: data?.PlanType,
-        payable: data?.Payable,
-        percentagePayable: data?.PercentagePayable,
+        payable: parseFloat(data?.Payable.toFixed(2)),
+        percentagePayable: parseFloat(data?.PercentagePayable.toFixed(2)),
         cashType: data?.CashType,
         cashMatchId: data?.CashMatchId,
         premium: data?.Premium,
