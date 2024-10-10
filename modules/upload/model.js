@@ -31,6 +31,7 @@ const Upload = sequelize.define(
     validationStatus: {
       type: DataTypes.STRING,
       allowNull: true,
+      defaultValue: 'Pending',
     },
   },
   {

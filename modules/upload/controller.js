@@ -9,22 +9,39 @@ class UploadController {
       const id = req.params.id;
       const Upload = await UploadService.getUploadById(id);
       if (Upload) {
-        res.status(200).json(Upload);
+        return res.status(200).json(Upload);
       } else {
-        res.status(400).json({ error: ' no data found' });
+        return res.status(400).json({ error: ' no data found' });
       }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  async updateUploadById(req, res) {
+    try {
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        await UploadService.updateUploadById(element.id, element.updatedFields);
+      }
+      const Upload = await UploadService.getUploadData();
+      return res.status(200).json(Upload);
+    } catch (error) {
+      console.log('error: ' + error);
+      return res.status(500).json({ error: error.message });
     }
   }
   async getUploadAllFiles(req, res) {
     try {
-      const Upload = await UploadService.getUploadData();
-      if (Upload?.length) {
-        res.status(200).json(Upload);
-      } else {
-        res.status(400).json({ error: 'Upload not found' });
+      const { limit, skip } = req.query;
+      if (!limit || !skip) {
+        return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
+      const { upload, count } = await UploadService.getUploadDataWithCounts(
+        limit,
+        skip
+      );
+      return res.status(200).json({ upload, count });
     } catch (error) {
       console.log('error: ' + error);
 
@@ -48,29 +65,43 @@ class UploadController {
 
       // Step 2: Validate the data and insert it into the database
       const results = [];
+      const checkFileName =
+        await UploadService.checkingFileName(originalFileName);
+      if (checkFileName) {
+        console.log('Checking fileName: ' + originalFileName);
+
+        return res.status(400).json({ error: 'File already uploaded' });
+      }
       const uploadData = await UploadService.saveUploadData(
         originalFileName,
         category
       );
-      jsonData.forEach(async data => {
+      for (const data of jsonData) {
         console.log('data: ' + JSON.stringify(data));
         if (data?.IORef) {
-          const saleData = await UploadService.saveSaleData(
-            data,
-            uploadData?.id
+          const checktransaction = await UploadService.checkingTransaction(
+            data?.IORef
           );
-          await UploadService.calculateSplitCommission(saleData?.id, data);
-          await UploadService.calculateAdvisorPayout(saleData?.id, data);
-          await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          if (!checktransaction) {
+            const saleData = await UploadService.saveSaleData(
+              data,
+              uploadData?.id
+            );
+            await UploadService.calculateSplitCommission(saleData?.id, data);
+            await UploadService.calculateAdvisorPayout(saleData?.id, data);
+            await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+          }
           results.push(data);
         }
-      });
-
-      res
+      }
+      const uploadss = await UploadService.getUploadData();
+      return res
         .status(200)
-        .json({ message: 'Excel file processed successfully', results });
+        .json({ message: 'Excel file processed successfully', uploadss });
     } catch (error) {
-      res.status(400).json({
+      console.log('error', error);
+
+      return res.status(400).json({
         error: 'Error processing the Excel file',
         details: error.message,
       });

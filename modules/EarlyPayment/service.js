@@ -1,5 +1,8 @@
 const { Op } = require('sequelize');
-const EarlyPaymentModel =require ('./model.js');
+const EarlyPaymentModel = require('./model.js');
+const Payout = require('../Payouts/model.js');
+const User = require('../User/model.js');
+const ManagerNotification = require('./Notification.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {
     try {
@@ -13,9 +16,9 @@ class EarlyPaymentModelService {
     try {
       const res = await EarlyPaymentModel.findAll({
         where: {
-          employeeId: employeeId,
+          managerId: employeeId,
           id: {
-            [Op.ne]: excludeId, 
+            [Op.ne]: excludeId,
           },
         },
       });
@@ -24,41 +27,65 @@ class EarlyPaymentModelService {
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
-  
-  async updateByAdmin(id, data) {
+
+  async updateByAdmin(id, data, earlyPayment, adminName) {
     try {
+      console.log('data: ' + JSON.stringify(data));
+
       if (data?.status == 'Approved') {
         await EarlyPaymentModel.update(
           {
             status: data.status,
             note: data.note || '',
             approveDate: Date.now(),
-            rejectDate:null
-
+            rejectDate: null,
           },
           {
             where: { id: id },
             returning: true,
           }
         );
+        const PayoutDetail = await Payout.findOne({
+          where: { advisorId: earlyPayment?.advisorId },
+        });
+        console.log('payoutDetail', PayoutDetail);
+
+        PayoutDetail.advances =
+          PayoutDetail.advances + earlyPayment?.requestPaymentAmount;
+        await PayoutDetail.save();
+        console.log('earlyPayment', earlyPayment);
+
+        await ManagerNotification.create({
+          date: new Date(),
+          note: `${adminName} Approved the Early Payment request`,
+          managerId: earlyPayment?.managerId,
+        });
       } else {
         await EarlyPaymentModel.update(
           {
             status: data.status,
             note: data.note || '',
             rejectDate: Date.now(),
-            approveDate:null
+            approveDate: null,
           },
           {
             where: { id: id },
             returning: true,
           }
         );
+
+        await ManagerNotification.create({
+          date: new Date(),
+          note: `${adminName} rejected the request`,
+          managerId: earlyPayment?.managerId,
+        });
       }
 
       const res = await EarlyPaymentModel.findByPk(id);
+
       return res;
     } catch (error) {
+      console.log('error: ' + error);
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
@@ -76,11 +103,13 @@ class EarlyPaymentModelService {
       skip = parseInt(skip);
       console.log('limit: ' + limit, skip);
 
-      const res = await EarlyPaymentModel.findAll({
+      const resp = await EarlyPaymentModel.findAll({
         limit: limit,
         offset: skip,
+        order: [['createdAt', 'DESC']],
       });
-      return res;
+      const count = await EarlyPaymentModel.count({});
+      return { resp, count };
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
@@ -88,4 +117,4 @@ class EarlyPaymentModelService {
   }
 }
 
-module.exports = new EarlyPaymentModelService()
+module.exports = new EarlyPaymentModelService();

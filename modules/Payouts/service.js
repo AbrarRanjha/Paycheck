@@ -1,3 +1,4 @@
+const advisorDetail = require('./advisorDetail.js');
 const Payout = require('./model.js');
 class PayoutService {
   async getPayoutById(id) {
@@ -12,80 +13,125 @@ class PayoutService {
     try {
       limit = parseInt(limit, 10);
       skip = parseInt(skip, 10);
-      console.log('limit: ' + limit, skip);
-
-      const res = await Payout.findAll({
+      const resp = await Payout.findAll({
         limit: limit,
         offset: skip,
+        include: [
+          {
+            model: advisorDetail,
+          },
+        ],
       });
-      return res;
+      const count = await Payout.count();
+      return { Payouts: resp, count };
     } catch (error) {
       console.log('error', error);
 
       throw new Error('Failed to get Payout: ' + error.message);
     }
   }
-  async updatePayoutSplitById(id, data) {
+  async updatePayoutById(id, data) {
     try {
       console.log('data: ' + typeof data?.advisorSplitPercentage);
 
-      const payoutRecord = await PayoutSplit.findByPk(id);
+      const payoutRecord = await Payout.findByPk(id);
       if (!payoutRecord) {
         throw new Error('Payout Split record not found.');
       }
       if (
-        typeof data.advisorSplitPercentage !== 'undefined' &&
-        data.advisorSplitPercentage !== payoutRecord.advisorSplitPercentage
+        typeof data.expenses !== 'undefined' &&
+        data.expenses !== payoutRecord.expenses
       ) {
-        if (data.advisorSplitPercentage == 0) {
-          console.log('advisorSplitPercentage');
-          payoutRecord.advisorSplitPercentage = 0;
-          payoutRecord.advisorSplitAmount = 0;
-        } else {
-          payoutRecord.advisorSplitPercentage = data.advisorSplitPercentage;
-          const grossValue = payoutRecord.grossValue || 0; // Replace with actual field
-          payoutRecord.advisorSplitAmount = (
-            grossValue *
-            (data.advisorSplitPercentage / 100)
-          ).toFixed(2);
-        }
+        payoutRecord.expenses = data.expenses;
+        payoutRecord.netPayout = payoutRecord.netPayout - payoutRecord.expenses;
       }
       if (
-        typeof data.introducerSplitPercentage !== 'undefined' &&
-        data.introducerSplitPercentage !==
-          payoutRecord.introducerSplitPercentage
+        typeof data.payAways !== 'undefined' &&
+        data.payAways !== payoutRecord.payAways
       ) {
-        if (data.introducerSplitPercentage == 0) {
-          console.log('advisorSplitPercentage');
+        payoutRecord.payAways = data.payAways;
+        payoutRecord.netPayout = payoutRecord.netPayout - payoutRecord.payAways;
+      }
+      if (
+        typeof data.loanRepayment !== 'undefined' &&
+        data.loanRepayment !== payoutRecord.loanRepayment
+      ) {
+        payoutRecord.loanRepayment = data.loanRepayment;
+        payoutRecord.netPayout =
+          payoutRecord.netPayout - payoutRecord.loanRepayment;
+      }
+      if (
+        typeof data.deduction !== 'undefined' &&
+        data.deduction !== payoutRecord.deduction
+      ) {
+        payoutRecord.deduction = data.deduction;
+        payoutRecord.netPayout =
+          payoutRecord.netPayout - payoutRecord.deduction;
+      }
+      if (
+        typeof data.advisorBalance !== 'undefined' &&
+        data.advisorBalance !== payoutRecord.advisorBalance
+      ) {
+        payoutRecord.advisorBalance = data.advisorBalance;
+        payoutRecord.netPayout =
+          payoutRecord.netPayout + payoutRecord.advisorBalance;
+      }
+      if (
+        typeof data.advances !== 'undefined' &&
+        data.advances !== payoutRecord.advances
+      ) {
+        payoutRecord.advances = data.advances;
+        payoutRecord.netPayout = payoutRecord.netPayout + payoutRecord.advances;
+      }
+      if (
+        typeof data.amountPaid !== 'undefined' &&
+        data.amountPaid !== payoutRecord.amountPaid
+      ) {
+        payoutRecord.amountPaid = data.amountPaid;
+        payoutRecord.netPayout =
+          payoutRecord.netPayout - payoutRecord.amountPaid;
+      }
+      Object.keys(data).forEach(key => {
+        if (
+          key != 'amountPaid' ||
+          key != 'advances' ||
+          key !== 'advisorBalance' ||
+          key !== 'deduction' ||
+          key !== 'loanRepayment' ||
+          key !== 'payAways' ||
+          key !== 'expenses'
+        ) {
+          payoutRecord[key] = data[key];
+        }
+      });
 
-          payoutRecord.introducerSplitPercentage = 0;
-          payoutRecord.introducerSplitAmount = 0;
-        }
-        payoutRecord.introducerSplitPercentage =
-          data.introducerSplitPercentage;
-        const grossValue = payoutRecord.grossValue || 0; // Replace with actual field
-        payoutRecord.introducerSplitAmount = (
-          grossValue *
-          (data.introducerSplitPercentage / 100)
-        ).toFixed(2);
-      }
-      if (
-        data.advisorName &&
-        data.advisorName !== payoutRecord.advisorName
-      ) {
-        payoutRecord.advisorName = data.advisorName;
-      }
-      if (
-        data.introducerName &&
-        data.introducerName !== payoutRecord.introducerName
-      ) {
-        payoutRecord.introducerName = data.introducerName;
-      }
-      return payoutRecord;
+      const updatedPayoutData = await payoutRecord.save();
+      return updatedPayoutData;
     } catch (error) {
       console.log('error: ' + error);
 
       throw new Error('Failed to get commissionSplit: ' + error.message);
+    }
+  }
+  async updatePayoutData(id, data) {
+    try {
+      const payoutRecord = await Payout.findByPk(id);
+      Object.keys(data).forEach(key => {
+        payoutRecord[key] = data[key];
+      });
+      const updatedPayoutData = await payoutRecord.save();
+      return updatedPayoutData;
+    } catch (error) {
+      console.log('error: ' + error);
+
+      throw new Error('Failed to get Payout: ' + error.message);
+    }
+  }
+  async calculateAdvisorPayout(payout) {
+    try {
+    } catch (error) {
+      console.log('error', error);
+      throw new Error(`Failed to process payout: ${error.message}`);
     }
   }
 }

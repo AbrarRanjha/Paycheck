@@ -1,28 +1,29 @@
 /* eslint-disable no-undef */
-const EarlyPaymentService =require ('./service.js');
+const EarlyPaymentService = require('./service.js');
 
 class EarlyPaymentController {
   constructor() {}
   async createEarlyPaymentRequest(req, res) {
     try {
       const {
-        employeeId,
-        employeeName,
+        advisorId,
+        advisorName,
         totalCommission,
         reason,
         requestPaymentAmount,
-        requestDate
+        requestDate,
       } = req.body;
 
       const employee = await EarlyPaymentService.createEarlyPayment({
-        employeeId,
-        employeeName,
+        advisorId,
+        advisorName,
         totalCommission,
         reason,
         requestPaymentAmount,
         requestDate: requestDate,
-        status: 'pending',
+        status: 'Pending',
         managerId: req?.user?.id,
+        managerName: req?.user?.firstName + ' ' + req?.user?.lastName,
       });
       res
         .status(201)
@@ -38,15 +39,11 @@ class EarlyPaymentController {
       if (!limit || !skip) {
         res.status(400).json({ error: 'Limit or skip is undefined' });
       }
-      const EarlyPayment = await EarlyPaymentService.getAllEarlyPayment(
+      const { resp, count } = await EarlyPaymentService.getAllEarlyPayment(
         limit,
         skip
       );
-      if (EarlyPayment) {
-        res.status(200).json(EarlyPayment);
-      } else {
-        res.status(400).json({ error: 'EarlyPayment not found' });
-      }
+      return res.status(200).json({ EarlyPayment: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -57,7 +54,7 @@ class EarlyPaymentController {
       const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);
       if (earlyPayment) {
         const employeeHistory = await EarlyPaymentService.getEmployeeHistory(
-          earlyPayment?.employeeId,
+          earlyPayment?.managerId,
           earlyPayment?.id
         );
         res.status(200).json({ earlyPayment, employeeHistory });
@@ -71,21 +68,26 @@ class EarlyPaymentController {
   async approveOrRejectEarlyPaymentById(req, res) {
     try {
       const id = req.params.id;
+      const adminName = req.user.firstName + ' ' + req.user.lastName;
       const earlyPayment = await EarlyPaymentService.getEarlyPaymentById(id);
       if (earlyPayment) {
         const { status, note } = req.body;
         const updatedEarlyPayment = await EarlyPaymentService.updateByAdmin(
           id,
-          { status, note }
+          { status, note },
+          earlyPayment,
+          adminName
         );
-        res.status(200).json( updatedEarlyPayment );
+        res.status(200).json(updatedEarlyPayment);
       } else {
         res.status(404).json({ error: 'EarlyPayment not found' });
       }
     } catch (error) {
+      console.log('error', error);
+
       res.status(500).json({ error: error.message });
     }
   }
 }
 
-module.exports= new EarlyPaymentController();
+module.exports = new EarlyPaymentController();

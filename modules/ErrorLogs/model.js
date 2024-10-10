@@ -22,15 +22,19 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
     allowNull: true,
   },
   status: {
-    type: DataTypes.BOOLEAN,
+    type: DataTypes.STRING,
     allowNull: true,
-    defaultValue:true
+    defaultValue:"Pending",
   },
   comment: {
     type: DataTypes.DATE,
     allowNull: true,
   },
   errorLocation: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  validationKey: {
     type: DataTypes.STRING,
     allowNull: true,
   },

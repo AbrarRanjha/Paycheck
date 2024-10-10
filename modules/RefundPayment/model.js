@@ -46,6 +46,10 @@ const RefundPayments = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    managerName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     approveDate: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -61,4 +65,5 @@ const RefundPayments = sequelize.define(
 );
 Employee.hasMany(RefundPayments, { foreignKey: 'managerId' });
 RefundPayments.belongsTo(Employee, { foreignKey: 'managerId' });
+
 module.exports = RefundPayments;

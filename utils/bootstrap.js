@@ -7,9 +7,12 @@ async function bootstrap() {
     try {
       const BCRYPT_SALT_ROUNDS = 10;
       const email = 'admin@gmail.com';
+      const firstName = 'Abc';
+      const lastName = 'Xyz';
       const password = '12345678';
       const role = 'admin';
       const username = 'admin123';
+      const isVerified = true;
       const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
       const user = {
@@ -17,6 +20,9 @@ async function bootstrap() {
         password: hashedPassword,
         role: role,
         username,
+        firstName,
+        lastName,
+        isVerified,
       };
       await Employee.create(user);
     } catch (err) {

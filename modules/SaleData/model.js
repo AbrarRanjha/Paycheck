@@ -20,6 +20,14 @@ const SalesData = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    advisorName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    advisorId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     startDate: {
       type: DataTypes.DATE,
       allowNull: true,

@@ -3,6 +3,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
 const Employee = require('../User/model.js');
+const ManagerNotification = require('./Notification.js');
 
 const EarlyPayments = sequelize.define(
   'EarlyPayments',
@@ -13,11 +14,11 @@ const EarlyPayments = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
-    employeeId: {
+    advisorId: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    employeeName: {
+    advisorName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -43,9 +44,14 @@ const EarlyPayments = sequelize.define(
       allowNull: true,
     },
     status: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: true,
     },
+    managerName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+   
     approveDate: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -61,4 +67,5 @@ const EarlyPayments = sequelize.define(
 );
 Employee.hasMany(EarlyPayments, { foreignKey: 'managerId' });
 EarlyPayments.belongsTo(Employee, { foreignKey: 'managerId' });
+
 module.exports = EarlyPayments;
