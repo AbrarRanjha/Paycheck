@@ -1,7 +1,7 @@
 const DashboardService = require('./service.js');
 
 class ErrorLogsController {
-  constructor() {}
+  constructor() { }
 
   async calculateFCICommission(req, res) {
     try {
@@ -94,7 +94,10 @@ class ErrorLogsController {
   }
   async getAdvisorBase(req, res) {
     try {
-      const resp = await DashboardService.calculateForEachAdvisor();
+      const selectedPeriod = req.query.period || "monthly";
+      console.log("selectedPeriod", selectedPeriod);
+
+      const resp = await DashboardService.calculateForEachAdvisor(selectedPeriod);
       return res.status(200).json({ advisorBase: resp });
     } catch (error) {
       console.log('error', error);

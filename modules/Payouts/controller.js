@@ -93,6 +93,24 @@ class PayoutController {
       return res.status(500).json({ error: error.message });
     }
   }
+  async appendPayoutExpenses(req, res) {
+    try {
+
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        const Payout = await PayoutService.appendPayoutData(
+          element.id,
+          element.updatedFields
+        );
+      }
+
+      return res.status(200).json("updated expenses");
+    } catch (error) {
+      console.log('error: ' + error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new PayoutController();

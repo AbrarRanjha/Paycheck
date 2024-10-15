@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 const ErrorLogs = require('../ErrorLogs/model.js');
 const SalesData = require('../SaleData/model.js');
 const EarlyPayments = require('../EarlyPayment/model.js');
@@ -222,77 +222,136 @@ class errorLogsService {
       throw new Error('Failed to get error logs: ' + error.message);
     }
   }
-  async calculateForEachAdvisor() {
+  async calculateForEachAdvisor(selectedPeriod) {
     try {
-      // Get overall totals
-      const totalCommissionAll = await this.getAllCompanyComiision(); // Total Commission
-      const totalProductsAll = await this.totalProducts(); // Total Products
-      const totalSplitsAll = await this.totalSplits(); // Total Splits
-      const totalAdvisorsAll = await this.totalAdvisor(); // Total Advisors
+      const date = new Date();
+      let startDate, endDate;
 
-      // Get all unique advisors
+      console.log("selectedPeriod:", selectedPeriod);
+      if (selectedPeriod == "monthly") {
+
+        // Monthly range from the first day to the last day of the current month
+        startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        endDate.setHours(23, 59, 59, 999); // End of the last day of the month
+
+      } else {
+        console.log("weekly");
+
+        // Weekly range from Sunday to Saturday
+        const startOfWeek = new Date(date);
+        const dayOfWeek = date.getDay();
+        startOfWeek.setDate(date.getDate() - dayOfWeek);
+        startOfWeek.setHours(0, 0, 0, 0); // Start of the day
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999); // End of the day
+
+        startDate = startOfWeek;
+        endDate = endOfWeek;
+
+      }
+
+      // Filter total calculations based on the date range
+      const totalCommissionAll = await SalesData.sum('FCIRecognition', {
+        where: {
+          paymentDate: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+      });
+
+      const totalProductsAll = await SalesData.count({
+        distinct: true,
+        col: 'planType',
+        where: {
+          paymentDate: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+      });
+
+      const totalSplitsAll = await CommissionSplit.count({
+        distinct: true,
+        col: 'splitType',
+        where: {
+          paymentDate: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+      });
+
+      // Get all unique advisors within the date range
       const advisors = await SalesData.findAll({
         attributes: ['advisorName'],
+        where: {
+          paymentDate: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
         group: ['advisorName'],
         raw: true,
       });
 
-      // Initialize an array to store results for each advisor
       const advisorResults = [];
 
-      // Loop through each advisor and calculate individual metrics
       for (const advisor of advisors) {
         const advisorName = advisor.advisorName;
 
-        // Get total commission for the advisor
         const totalCommission = await SalesData.sum('FCIRecognition', {
-          where: { advisorName },
+          where: {
+            advisorName,
+            paymentDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
         });
 
-        // Get product count for the advisor
         const productCount = await SalesData.count({
-          where: { advisorName },
+          where: {
+            advisorName,
+            paymentDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
           distinct: true,
           col: 'planType',
         });
 
-        // Get split count for the advisor
         const splitCount = await CommissionSplit.count({
-          where: { advisorName }, // Assuming `CommissionSplit` also has `advisorName`
+          where: {
+            advisorName,
+            paymentDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
           distinct: true,
           col: 'splitType',
         });
 
-        // Calculate percentages
-        const commissionPercentage =
-          totalCommissionAll > 0
-            ? (totalCommission / totalCommissionAll) * 100
-            : 0;
-        const productPercentage =
-          totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0;
-        const splitPercentage =
-          totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0;
+        const commissionPercentage = totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0;
+        const productPercentage = totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0;
+        const splitPercentage = totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0;
 
-        // Push the results for this advisor
         advisorResults.push({
           advisorName,
           totalCommission,
           productCount,
           splitCount,
-          commissionPercentage: commissionPercentage, // Format to 2 decimal places
+          commissionPercentage: commissionPercentage,
           productPercentage: productPercentage,
           splitPercentage: splitPercentage,
         });
       }
 
-      return advisorResults; // Return results for each advisor
+      return advisorResults;
     } catch (error) {
       console.log('error', error);
-      throw new Error(
-        'Failed to calculate values for each advisor: ' + error.message
-      );
+      throw new Error('Failed to calculate values for each advisor: ' + error.message);
     }
   }
+
+
   async getNotificationOfManager(managerId) {
     try {
       const earlyPayments = await ManagerNotification.findAll({

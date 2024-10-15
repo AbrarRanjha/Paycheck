@@ -109,6 +109,22 @@ class EarlyPaymentModelService {
       throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
     }
   }
+  async getAllEarlyPayment(limit, skip) {
+    try {
+      limit = parseInt(limit);
+      skip = parseInt(skip);
+      const resp = await EarlyPaymentModel.findAll({
+        order: [['createdAt', 'DESC']],
+        limit: limit,
+        offset: skip
+      });
+      const count = await EarlyPaymentModel.count({});
+      return { resp, count };
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get EarlyPaymentModel: ' + error.message);
+    }
+  }
 }
 
 module.exports = new EarlyPaymentModelService();

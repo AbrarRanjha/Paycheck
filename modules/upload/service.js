@@ -49,6 +49,17 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+  async clearErrorLogs() {
+    try {
+      const upload = await ErrorLogs.destroy({
+        where: {}
+      });
+      return upload;
+    } catch (error) {
+      console.log('error: ' + error);
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
   async getUploadDataWithCounts(limit, skip) {
     try {
       limit = parseInt(limit, 10);
@@ -99,8 +110,18 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+  parseExcelDate(excelDate) {
+    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+    return date.toLocaleString();
+  }
   async calculateSplitCommission(saleDataID, data) {
     try {
+      let paymentDate;
+      if (typeof data.PaymentDate == 'number') {
+        paymentDate = this.parseExcelDate(data.PaymentDate);
+      } else {
+        paymentDate = data.PaymentDate;
+      }
       console.log(`saleDataID: ${saleDataID}`);
       const splitPercentage = 100 - data?.PercentagePayable;
       const splitAmount =
@@ -116,6 +137,7 @@ class uploadService {
         frequency: data?.Frequency,
         FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
         splitType: data?.RecipientType,
+        paymentDate,
         clientName: data?.ClientName,
         ...(isAdviser
           ? {
@@ -135,10 +157,7 @@ class uploadService {
       throw new Error(`Failed to get upload: ${error.message}`);
     }
   }
-  parseExcelDate(excelDate) {
-    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
-    return date.toLocaleString();
-  }
+
   async calculateAdvisorPayout(saleDataID, data) {
     try {
       let paymentDate;
@@ -193,7 +212,6 @@ class uploadService {
   async SaveErrorlogsAndValidation(saleDataID, data) {
     const errors = [];
     const errorLocation = 'CommisonData';
-    await ErrorLogs.destroy();
     // Validate transactionID
     if (typeof data.IORef !== 'string') {
       errors.push({
@@ -389,10 +407,7 @@ class uploadService {
     return false;
   }
 
-  parseExcelDate(excelDate) {
-    const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
-    return date.toLocaleString();
-  }
+
 
   async saveSaleData(data, uploadId) {
     try {

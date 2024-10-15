@@ -3,7 +3,7 @@ const xlsx = require('xlsx');
 const UploadService = require('./service.js');
 
 class UploadController {
-  constructor() {}
+  constructor() { }
   async getUploadById(req, res) {
     try {
       const id = req.params.id;
@@ -76,6 +76,7 @@ class UploadController {
         originalFileName,
         category
       );
+      const erroLogs = await UploadService.clearErrorLogs();
       for (const data of jsonData) {
         console.log('data: ' + JSON.stringify(data));
         if (data?.IORef) {

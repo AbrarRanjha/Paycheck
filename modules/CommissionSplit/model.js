@@ -26,14 +26,14 @@ const CommissionSplit = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-   splitPercentage: {
+    splitPercentage: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
     splitAmount: {
-       type: DataTypes.FLOAT,
-       allowNull: true,
-     },
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
     grossFCI: {
       type: DataTypes.FLOAT,
       allowNull: true,
@@ -62,7 +62,11 @@ const CommissionSplit = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
- 
+    paymentDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+
     // clientId: {
     //   type: DataTypes.STRING,
     //   allowNull: true,

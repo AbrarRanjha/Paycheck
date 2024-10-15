@@ -144,6 +144,18 @@ class PayoutService {
       throw new Error('Failed to get Payout: ' + error.message);
     }
   }
+  async appendPayoutData(id, data) {
+    try {
+      const payoutRecord = await Payout.findByPk(id);
+      payoutRecord.expenses = payoutRecord.expenses + data.expenses;
+      const updatedPayoutData = await payoutRecord.save();
+      return updatedPayoutData;
+    } catch (error) {
+      console.log('error: ' + error);
+
+      throw new Error('Failed to get Payout: ' + error.message);
+    }
+  }
   async calculateAdvisorPayout(payout) {
     try {
     } catch (error) {
