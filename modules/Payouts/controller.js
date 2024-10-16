@@ -37,15 +37,17 @@ class PayoutController {
 
   async getAdvisorPayoutPeriodically(req, res) {
     try {
-      const { limit, skip, period, month } = req.query;
+      const { limit, skip, period, month, year } = req.query;
+      const selectedPeriod = period || "monthly"
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
       const { resp, count } = await getAdvisorPayoutPeriod(
         limit,
         skip,
-        period,
-        month
+        selectedPeriod,
+        month,
+        year
       );
       return res.status(200).json({ payoutsArray: resp, count: count });
     } catch (error) {
@@ -69,7 +71,7 @@ class PayoutController {
 
   async updatePayout(req, res) {
     try {
-      const { limit, skip, period } = req.query;
+      const { limit, skip } = req.query;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
@@ -81,13 +83,8 @@ class PayoutController {
           element.updatedFields
         );
       }
-      const selectedPeriod = period || 'monthly';
-      const payoutResponse = await getAdvisorPayoutPeriod(
-        limit,
-        skip,
-        selectedPeriod
-      );
-      return res.status(200).json(payoutResponse);
+
+      return res.status(200).json("updated successfully");
     } catch (error) {
       console.log('error: ' + error);
       return res.status(500).json({ error: error.message });
@@ -101,10 +98,25 @@ class PayoutController {
         const element = data[index];
         const Payout = await PayoutService.appendPayoutData(
           element.id,
-          element.updatedFields
+          element.expenses,
         );
       }
-
+      return res.status(200).json("append expenses");
+    } catch (error) {
+      console.log('error: ' + error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  async updatePayoutExpenses(req, res) {
+    try {
+      const { data } = req.body;
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        const Payout = await PayoutService.updatePayoutDataExpenses(
+          element.id,
+          element.expenses,
+        );
+      }
       return res.status(200).json("updated expenses");
     } catch (error) {
       console.log('error: ' + error);
@@ -114,12 +126,13 @@ class PayoutController {
 }
 
 module.exports = new PayoutController();
-async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMonth) {
+async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMonth, specifiedYear) {
   try {
     let payoutsArray = [];
     const { Payouts, count } = await PayoutService.getAllPayout(limit, skip);
     const currentWeek = moment().week();
     const currentMonth = moment().month();
+    const currentYear = moment().year();
 
     for (let index = 0; index < Payouts.length; index++) {
       const payout = Payouts[index];
@@ -131,16 +144,20 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
 
       payout.advisorDetails.forEach(detail => {
         const detailCreatedAt = moment(detail.date);
+
         if (selectedPeriod === 'weekly') {
-          if (detailCreatedAt.week() === currentWeek) {
+          if (detailCreatedAt.week() === currentWeek && detailCreatedAt.year() === currentYear) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
           }
         } else if (selectedPeriod === 'monthly') {
-          // Check if a specific month is provided, otherwise default to current month
           const monthToCompare = specifiedMonth ? parseInt(specifiedMonth, 10) : currentMonth;
-          if (detailCreatedAt.month() === monthToCompare) {
+          const yearToCompare = specifiedYear ? parseInt(specifiedYear, 10) : currentYear;
+          console.log("yearToCompare", yearToCompare);
+
+
+          if (detailCreatedAt.month() === monthToCompare && detailCreatedAt.year() === yearToCompare) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
@@ -177,6 +194,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
     throw new Error('Error occurred', error);
   }
 }
+
 async function getAllAdvisorPayoutPeriod(selectedPeriod) {
   try {
     let payoutsArray = [];

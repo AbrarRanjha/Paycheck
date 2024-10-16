@@ -8,5 +8,6 @@ router.get('/', PayoutController.getAdvisorPayoutPeriodically);
 router.post('/all', PayoutController.getAllAdvisorPayoutPeriodically);
 router.put('/updatePayout', PayoutController.updatePayout);
 router.put('/appendExpenses', PayoutController.appendPayoutExpenses);
+router.put('/updateExpenses', PayoutController.updatePayoutExpenses);
 
 module.exports = router;

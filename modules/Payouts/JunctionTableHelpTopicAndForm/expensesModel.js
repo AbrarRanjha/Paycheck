@@ -1,10 +1,9 @@
 
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../db.js');
-const Upload = require('../upload/model.js');
+const { sequelize } = require('../../../db.js');
 
-const advisorDetail = sequelize.define(
-    'advisorDetail',
+const expenses = sequelize.define(
+    'expenses',
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,11 +20,10 @@ const advisorDetail = sequelize.define(
             allowNull: true,
         },
 
-
     },
     {
         timestamps: true,
     }
 );
 
-module.exports = advisorDetail;
+module.exports = expenses;

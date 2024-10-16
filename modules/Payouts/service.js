@@ -144,15 +144,35 @@ class PayoutService {
       throw new Error('Failed to get Payout: ' + error.message);
     }
   }
-  async appendPayoutData(id, data) {
+  async appendPayoutData(id, expenses) {
     try {
       const payoutRecord = await Payout.findByPk(id);
-      payoutRecord.expenses = payoutRecord.expenses + data.expenses;
+      if (!payoutRecord.expensesArray) {
+        payoutRecord.expensesArray = [];
+      }
+      payoutRecord.expensesArray = [...payoutRecord.expensesArray, ...expenses];
+      const totalNewExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      payoutRecord.expenses = (payoutRecord.expenses || 0) + totalNewExpenses;
+
+      // Save the updated payout record once
       const updatedPayoutData = await payoutRecord.save();
       return updatedPayoutData;
     } catch (error) {
       console.log('error: ' + error);
+      throw new Error('Failed to update Payout: ' + error.message);
+    }
+  }
 
+  async updatePayoutDataExpenses(id, expenses) {
+    try {
+      const payoutRecord = await Payout.findByPk(id);
+      payoutRecord.expensesArray = expenses;
+      const totalAmount = expenses.reduce((sum, elm) => sum + elm.amount, 0);
+      payoutRecord.expenses = totalAmount;
+      const updatedPayoutData = await payoutRecord.save();
+      return updatedPayoutData;
+    } catch (error) {
+      console.log('error: ' + error);
       throw new Error('Failed to get Payout: ' + error.message);
     }
   }

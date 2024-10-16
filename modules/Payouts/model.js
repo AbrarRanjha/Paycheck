@@ -43,6 +43,10 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
+    expensesArray: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
     advances: {
       type: DataTypes.FLOAT,
       allowNull: true,
