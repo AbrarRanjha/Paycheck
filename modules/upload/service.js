@@ -21,6 +21,21 @@ class uploadService {
       throw new Error('Failed to get upload: ' + error.message);
     }
   }
+  async deleteUploadById(id) {
+    try {
+      // const saleData = await SalesData.destroy({ where: { uploadId: id } });
+
+      // const advisorD = await advisorDetail.destroy({ where: { uploadId: id } });
+
+
+      const upload = await Upload.destroy({
+        where: { id: id },
+      });
+      return upload;
+    } catch (error) {
+      throw new Error('Failed to get upload: ' + error.message);
+    }
+  }
   async updateUploadById(id, newData) {
     try {
       const upload = await Upload.findByPk(id);
@@ -138,6 +153,7 @@ class uploadService {
         FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
         splitType: data?.RecipientType,
         paymentDate,
+        planType: data?.PlanType,
         clientName: data?.ClientName,
         ...(isAdviser
           ? {
@@ -158,7 +174,7 @@ class uploadService {
     }
   }
 
-  async calculateAdvisorPayout(saleDataID, data) {
+  async calculateAdvisorPayout(saleDataID, uploadId, data) {
     try {
       let paymentDate;
       console.log(`saleDataID: ${saleDataID}`);
@@ -179,6 +195,7 @@ class uploadService {
       if (advisor) {
         await advisorDetail.create({
           PayoutID: advisor.id,
+          uploadId: uploadId,
           transactionID: data?.IORef,
           advisorSplitPercentage: parseFloat(splitPercentage.toFixed(2)),
           advisorSplitAmount: parseFloat(splitAmount.toFixed(2)),
@@ -195,6 +212,7 @@ class uploadService {
         const Payouts = await Payout.create(payoutData);
         await advisorDetail.create({
           PayoutID: Payouts.id,
+          UploadId: uploadId,
           transactionID: data?.IORef,
           advisorSplitAmount: parseFloat(splitAmount.toFixed(2)),
           advisorSplitPercentage: parseFloat(splitPercentage.toFixed(2)),

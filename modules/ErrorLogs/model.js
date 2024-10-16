@@ -1,6 +1,6 @@
-const { DataTypes } =require ('sequelize');
-const {sequelize} =require ('../../db.js');
-const SalesData =require ('../SaleData/model.js');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../../db.js');
+const SalesData = require('../SaleData/model.js');
 
 const ErrorLogs = sequelize.define('ErrorLogs', {
   id: {
@@ -24,7 +24,7 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
   status: {
     type: DataTypes.STRING,
     allowNull: true,
-    defaultValue:"Pending",
+    defaultValue: "Pending",
   },
   comment: {
     type: DataTypes.DATE,
@@ -41,6 +41,6 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
 }, {
   timestamps: true,
 });
-SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId' });
+SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId', onDelete: 'CASCADE', });
 ErrorLogs.belongsTo(SalesData, { foreignKey: 'saleDataId' });
 module.exports = ErrorLogs;

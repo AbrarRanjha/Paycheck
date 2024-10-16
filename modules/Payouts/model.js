@@ -1,5 +1,5 @@
-const { DataTypes } =require ('sequelize');
-const { sequelize } =require ('../../db.js');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../../db.js');
 const advisorDetail = require('./advisorDetail.js');
 
 const Payout = sequelize.define(
@@ -31,14 +31,14 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-   loanRepayment: {
+    loanRepayment: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
     deduction: {
-       type: DataTypes.FLOAT,
-       allowNull: true,
-     },
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
     expenses: {
       type: DataTypes.FLOAT,
       allowNull: true,
@@ -55,12 +55,12 @@ const Payout = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-   
+
   },
   {
     timestamps: true,
   }
 );
-Payout.hasMany(advisorDetail, { foreignKey: 'PayoutID' });
+Payout.hasMany(advisorDetail, { foreignKey: 'PayoutID', });
 advisorDetail.belongsTo(Payout, { foreignKey: 'PayoutID' });
 module.exports = Payout;

@@ -84,11 +84,12 @@ const SalesData = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+
   },
   {
     timestamps: true,
   }
 );
 module.exports = SalesData;
-Upload.hasMany(SalesData, { foreignKey: 'uploadId' });
+Upload.hasMany(SalesData, { foreignKey: 'uploadId', onDelete: 'CASCADE', });
 SalesData.belongsTo(Upload, { foreignKey: 'uploadId' });

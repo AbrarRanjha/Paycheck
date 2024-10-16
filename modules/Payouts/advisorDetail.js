@@ -1,6 +1,7 @@
 
-const { DataTypes } =require ('sequelize');
-const { sequelize } =require ('../../db.js');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../../db.js');
+const Upload = require('../upload/model.js');
 
 const advisorDetail = sequelize.define(
   'advisorDetail',
@@ -35,11 +36,13 @@ const advisorDetail = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-   
+
+
   },
   {
     timestamps: true,
   }
 );
-
+Upload.hasMany(advisorDetail, { foreignKey: 'uploadId', onDelete: 'CASCADE', });
+advisorDetail.belongsTo(Upload, { foreignKey: 'uploadId' });
 module.exports = advisorDetail;

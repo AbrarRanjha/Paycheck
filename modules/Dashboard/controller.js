@@ -68,9 +68,25 @@ class ErrorLogsController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getTotalAvisorCount(req, res) {
+    try {
+      const resp = await DashboardService.totalAdvisorCount();
+      return res.status(200).json({ advisorCount: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
   async getTotalAvisor(req, res) {
     try {
       const resp = await DashboardService.totalAdvisor();
+      return res.status(200).json({ advisors: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  async getTotalProductsCount(req, res) {
+    try {
+      const resp = await DashboardService.totalProductsCount();
       return res.status(200).json({ advisorCount: resp });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -79,7 +95,7 @@ class ErrorLogsController {
   async getTotalProducts(req, res) {
     try {
       const resp = await DashboardService.totalProducts();
-      return res.status(200).json({ advisorCount: resp });
+      return res.status(200).json({ products: resp });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -94,10 +110,11 @@ class ErrorLogsController {
   }
   async getAdvisorBase(req, res) {
     try {
-      const selectedPeriod = req.query.period || "monthly";
+      const { period, productType, advisor } = req.query
+      const selectedPeriod = period;
       console.log("selectedPeriod", selectedPeriod);
 
-      const resp = await DashboardService.calculateForEachAdvisor(selectedPeriod);
+      const resp = await DashboardService.calculateForEachAdvisor(selectedPeriod, productType, advisor);
       return res.status(200).json({ advisorBase: resp });
     } catch (error) {
       console.log('error', error);

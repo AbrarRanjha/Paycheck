@@ -37,15 +37,15 @@ class PayoutController {
 
   async getAdvisorPayoutPeriodically(req, res) {
     try {
-      const { limit, skip, period } = req.query;
-      const selectedPeriod = period || 'monthly';
+      const { limit, skip, period, month } = req.query;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
       const { resp, count } = await getAdvisorPayoutPeriod(
         limit,
         skip,
-        selectedPeriod
+        period,
+        month
       );
       return res.status(200).json({ payoutsArray: resp, count: count });
     } catch (error) {
@@ -114,7 +114,7 @@ class PayoutController {
 }
 
 module.exports = new PayoutController();
-async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
+async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMonth) {
   try {
     let payoutsArray = [];
     const { Payouts, count } = await PayoutService.getAllPayout(limit, skip);
@@ -128,6 +128,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
         totalDeduction = 0,
         netPayout = 0;
       LgMargin = 0;
+
       payout.advisorDetails.forEach(detail => {
         const detailCreatedAt = moment(detail.date);
         if (selectedPeriod === 'weekly') {
@@ -137,13 +138,16 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
             LgMargin += detail.FCIRecognition;
           }
         } else if (selectedPeriod === 'monthly') {
-          if (detailCreatedAt.month() === currentMonth) {
+          // Check if a specific month is provided, otherwise default to current month
+          const monthToCompare = specifiedMonth ? parseInt(specifiedMonth, 10) : currentMonth;
+          if (detailCreatedAt.month() === monthToCompare) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
           }
         }
       });
+
       totalDeduction =
         payout.deduction +
         payout.loanRepayment +

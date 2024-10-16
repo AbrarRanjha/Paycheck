@@ -17,6 +17,18 @@ class UploadController {
       return res.status(500).json({ error: error.message });
     }
   }
+  async deleteUploadById(req, res) {
+    try {
+      const id = req.params.id;
+      const Upload = await UploadService.deleteUploadById(id);
+      return res.status(200).json(Upload);
+
+    } catch (error) {
+      console.log("error", error);
+
+      return res.status(500).json({ error: error.message });
+    }
+  }
   async updateUploadById(req, res) {
     try {
       const { data } = req.body;
@@ -89,7 +101,7 @@ class UploadController {
               uploadData?.id
             );
             await UploadService.calculateSplitCommission(saleData?.id, data);
-            await UploadService.calculateAdvisorPayout(saleData?.id, data);
+            await UploadService.calculateAdvisorPayout(saleData?.id, uploadData?.id, data);
             await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
           }
           results.push(data);

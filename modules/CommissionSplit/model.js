@@ -62,6 +62,10 @@ const CommissionSplit = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    planType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     paymentDate: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -80,6 +84,6 @@ const CommissionSplit = sequelize.define(
     timestamps: true,
   }
 );
-SalesData.hasOne(CommissionSplit, { foreignKey: 'saleDataId' });
+SalesData.hasOne(CommissionSplit, { foreignKey: 'saleDataId', onDelete: 'CASCADE', });
 CommissionSplit.belongsTo(SalesData, { foreignKey: 'saleDataId' });
 module.exports = CommissionSplit;
