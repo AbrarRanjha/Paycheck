@@ -19,47 +19,6 @@ const Payout = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    margin: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    payAways: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    advisorBalance: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    loanRepayment: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    deduction: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    expenses: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    expensesArray: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-    advances: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-    datePaid: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    amountPaid: {
-      type: DataTypes.FLOAT,
-      allowNull: true,
-    },
-
   },
   {
     timestamps: true,

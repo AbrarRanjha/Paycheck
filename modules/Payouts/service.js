@@ -1,4 +1,6 @@
+const moment = require('moment');
 const advisorDetail = require('./advisorDetail.js');
+const ExpensesDetail = require('./ExpensesDetail.js');
 const Payout = require('./model.js');
 class PayoutService {
   async getPayoutById(id) {
@@ -20,6 +22,7 @@ class PayoutService {
           {
             model: advisorDetail,
           },
+
         ],
       });
       const count = await Payout.count();
@@ -132,40 +135,85 @@ class PayoutService {
   }
   async updatePayoutData(id, data) {
     try {
-      const payoutRecord = await Payout.findByPk(id);
-      Object.keys(data).forEach(key => {
-        payoutRecord[key] = data[key];
-      });
-      const updatedPayoutData = await payoutRecord.save();
-      return updatedPayoutData;
-    } catch (error) {
-      console.log('error: ' + error);
+      const currentMonth = moment().month(); // Zero-based (0 = January)
+      const currentYear = moment().year();
 
-      throw new Error('Failed to get Payout: ' + error.message);
+      let payoutRecord = await ExpensesDetail.findOne({
+        where: {
+          PayoutID: id,
+          month: currentMonth,
+          year: currentYear,
+        }
+      });
+
+      // If the record does not exist, create a new one
+      if (!payoutRecord) {
+        data.PayoutID = id;
+        data.month = currentMonth;
+        data.year = currentYear;
+        payoutRecord = await ExpensesDetail.create(data);
+      } else {
+        // Update the existing record with the new data
+        Object.keys(data).forEach(key => {
+          payoutRecord[key] = data[key];
+        });
+
+        // Save the updated payout record
+        await payoutRecord.save();
+      }
+
+      return payoutRecord;
+    } catch (error) {
+      console.log('error:', error);
+      throw new Error('Failed to update or create Payout: ' + error.message);
     }
   }
+
   async appendPayoutData(id, expenses) {
     try {
-      const payoutRecord = await Payout.findByPk(id);
-      if (!payoutRecord.expensesArray) {
-        payoutRecord.expensesArray = [];
+      // Get the current month and year
+      const currentMonth = moment().month(); // Zero-based (0 = January)
+      const currentYear = moment().year();
+      let payoutRecord = await ExpensesDetail.findOne({
+        where: {
+          PayoutID: id,
+          month: currentMonth,
+          year: currentYear
+        }
+      });
+      if (!payoutRecord) {
+        payoutRecord = await ExpensesDetail.create({
+          PayoutID: id,
+          month: currentMonth,
+          year: currentYear,
+          expensesArray: [],
+          expenses: 0
+        });
       }
       payoutRecord.expensesArray = [...payoutRecord.expensesArray, ...expenses];
       const totalNewExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
       payoutRecord.expenses = (payoutRecord.expenses || 0) + totalNewExpenses;
 
-      // Save the updated payout record once
       const updatedPayoutData = await payoutRecord.save();
       return updatedPayoutData;
     } catch (error) {
-      console.log('error: ' + error);
-      throw new Error('Failed to update Payout: ' + error.message);
+      console.log('error:', error);
+      throw new Error('Failed to update or create Payout: ' + error.message);
     }
   }
 
+
   async updatePayoutDataExpenses(id, expenses) {
     try {
-      const payoutRecord = await Payout.findByPk(id);
+      const currentMonth = moment().month(); // Zero-based (0 = January)
+      const currentYear = moment().year();
+      let payoutRecord = await ExpensesDetail.findOne({
+        where: {
+          PayoutID: id,
+          month: currentMonth,
+          year: currentYear
+        }
+      });
       payoutRecord.expensesArray = expenses;
       const totalAmount = expenses.reduce((sum, elm) => sum + elm.amount, 0);
       payoutRecord.expenses = totalAmount;
@@ -184,5 +232,7 @@ class PayoutService {
     }
   }
 }
+
+
 
 module.exports = new PayoutService();

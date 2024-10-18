@@ -29,7 +29,14 @@ class EmployeeService {
   async updateEmployeeById(id, data) {
     try {
       console.log('data: ' + JSON.stringify(data));
-
+      const isUser = await Employee.findByPk(id);
+      if (isUser.email != data.email) {
+        const isExist = await Employee.findOne({ where: { email: data.email } });
+        if (isExist) {
+          throw new Error('email already exist');
+        }
+        data = { ...data, isVerified: false }
+      }
       await Employee.update(data, {
         where: { id: id },
       });
@@ -47,7 +54,7 @@ class EmployeeService {
   }
   generateAccessToken(userId) {
     return jwt.sign({ userId }, process.env.API_SECRET, {
-      expiresIn: '1d',
+      expiresIn: '3d',
     });
   }
   async changePassword(userId, oldPassword, newPassword) {

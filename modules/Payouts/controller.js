@@ -1,6 +1,8 @@
 const moment = require('moment'); // Import moment.js for date manipulation
 
 const PayoutService = require('./service.js');
+const ExpensesDetail = require('./ExpensesDetail.js');
+const advisorDetail = require('./advisorDetail.js');
 
 class PayoutController {
   constructor() { }
@@ -57,10 +59,11 @@ class PayoutController {
   }
   async getAllAdvisorPayoutPeriodically(req, res) {
     try {
-      const { period } = req.query;
+      const { period, month, year } = req.query;
       const selectedPeriod = period || 'monthly';
       const { resp, count } = await getAllAdvisorPayoutPeriod(
-        selectedPeriod
+        selectedPeriod,
+        month, year
       );
       return res.status(200).json({ payoutsArray: resp, count: count });
     } catch (error) {
@@ -132,7 +135,93 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
     const { Payouts, count } = await PayoutService.getAllPayout(limit, skip);
     const currentWeek = moment().week();
     const currentMonth = moment().month();
+    const currentDate = moment();
     const currentYear = moment().year();
+    const monthToCompare = specifiedMonth ? parseInt(specifiedMonth, 10) : currentMonth;
+    const yearToCompare = specifiedYear ? parseInt(specifiedYear, 10) : currentYear;
+    for (let index = 0; index < Payouts.length; index++) {
+      const payout = Payouts[index];
+      let totalGrossFCI = 0,
+        totalAdvisorSplit = 0,
+        totalDeduction = 0,
+        netPayout = 0;
+      LgMargin = 0;
+
+      payout.advisorDetails.forEach(detail => {
+        const detailCreatedAt = moment(detail.date);
+
+        if (selectedPeriod === 'weekly') {
+          if (detailCreatedAt.week() === currentWeek && detailCreatedAt.year() === currentYear) {
+            totalGrossFCI += detail.grossFCI;
+            totalAdvisorSplit += detail.advisorSplitAmount;
+            LgMargin += detail.FCIRecognition;
+          }
+        } else if (selectedPeriod === 'monthly') {
+          const monthToCompare = specifiedMonth ? parseInt(specifiedMonth, 10) : currentMonth;
+          const yearToCompare = specifiedYear ? parseInt(specifiedYear, 10) : currentYear;
+          console.log("yearToCompare", yearToCompare);
+
+
+          if (detailCreatedAt.month() === monthToCompare && detailCreatedAt.year() === yearToCompare) {
+            totalGrossFCI += detail.grossFCI;
+            totalAdvisorSplit += detail.advisorSplitAmount;
+            LgMargin += detail.FCIRecognition;
+          }
+        }
+      });
+      console.log("monthToCompare", monthToCompare, yearToCompare);
+
+      let periodExpenses = await ExpensesDetail.findOne({
+        where: {
+          PayoutID: payout.id,
+          month: monthToCompare,
+          year: yearToCompare
+        },
+        raw: true
+      });
+
+
+
+      totalDeduction =
+        periodExpenses?.deduction +
+        periodExpenses?.loanRepayment +
+        periodExpenses?.expenses +
+        periodExpenses?.amountPaid +
+        periodExpenses?.payAways;
+      netPayout =
+        totalAdvisorSplit +
+        periodExpenses?.advisorBalance +
+        periodExpenses?.advances -
+        totalDeduction;
+      if (periodExpenses?.datePaid && moment(periodExpenses?.datePaid).isBefore(currentDate)) {
+        netPayout -= periodExpenses?.amountPaid;
+      }
+      payoutsArray.push({
+        advisorName: payout.advisorName,
+        advisorId: payout.advisorId,
+        period: selectedPeriod,
+        totalGrossFCI: totalGrossFCI,
+        totalAdvisorSplit: totalAdvisorSplit,
+        totalDeduction: totalDeduction,
+        netPayout: netPayout,
+        LgMargin: LgMargin,
+        advisor: periodExpenses,
+        advisorDetails: payout.advisorDetails
+      });
+    }
+    return { resp: payoutsArray, count };
+  } catch (error) {
+    console.log('error: ' + error);
+    throw new Error('Error occurred', error);
+  }
+}
+
+async function getAllAdvisorPayoutPeriod(selectedPeriod) {
+  try {
+    let payoutsArray = [];
+    const { Payouts, count } = await PayoutService.getAllPayouts();
+    const currentWeek = moment().week();
+    const currentMonth = moment().month();
 
     for (let index = 0; index < Payouts.length; index++) {
       const payout = Payouts[index];
@@ -165,17 +254,21 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
         }
       });
 
-      totalDeduction =
-        payout.deduction +
-        payout.loanRepayment +
-        payout.expenses +
-        payout.amountPaid +
-        payout.payAways;
-      netPayout =
-        totalAdvisorSplit +
-        payout.advisorBalance +
-        payout.advances -
-        totalDeduction;
+      if (specifiedMonth && specifiedYear) {
+        netPayout = totalAdvisorSplit
+      } else {
+        totalDeduction =
+          payout.deduction +
+          payout.loanRepayment +
+          payout.expenses +
+          payout.amountPaid +
+          payout.payAways;
+        netPayout =
+          totalAdvisorSplit +
+          payout.advisorBalance +
+          payout.advances -
+          totalDeduction;
+      }
       payoutsArray.push({
         advisorName: payout.advisorName,
         advisorId: payout.advisorId,
@@ -193,64 +286,5 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
     console.log('error: ' + error);
     throw new Error('Error occurred', error);
   }
-}
 
-async function getAllAdvisorPayoutPeriod(selectedPeriod) {
-  try {
-    let payoutsArray = [];
-    const { Payouts, count } = await PayoutService.getAllPayouts();
-    const currentWeek = moment().week();
-    const currentMonth = moment().month();
-
-    for (let index = 0; index < Payouts.length; index++) {
-      const payout = Payouts[index];
-      let totalGrossFCI = 0,
-        totalAdvisorSplit = 0,
-        totalDeduction = 0,
-        netPayout = 0;
-      LgMargin = 0;
-      payout.advisorDetails.forEach(detail => {
-        const detailCreatedAt = moment(detail.date);
-        if (selectedPeriod === 'weekly') {
-          if (detailCreatedAt.week() === currentWeek) {
-            totalGrossFCI += detail.grossFCI;
-            totalAdvisorSplit += detail.advisorSplitAmount;
-            LgMargin += detail.FCIRecognition;
-          }
-        } else if (selectedPeriod === 'monthly') {
-          if (detailCreatedAt.month() === currentMonth) {
-            totalGrossFCI += detail.grossFCI;
-            totalAdvisorSplit += detail.advisorSplitAmount;
-            LgMargin += detail.FCIRecognition;
-          }
-        }
-      });
-      totalDeduction =
-        payout.deduction +
-        payout.loanRepayment +
-        payout.expenses +
-        payout.amountPaid +
-        payout.payAways;
-      netPayout =
-        totalAdvisorSplit +
-        payout.advisorBalance +
-        payout.advances -
-        totalDeduction;
-      payoutsArray.push({
-        advisorName: payout.advisorName,
-        advisorId: payout.advisorId,
-        period: selectedPeriod,
-        totalGrossFCI: totalGrossFCI,
-        totalAdvisorSplit: totalAdvisorSplit,
-        totalDeduction: totalDeduction,
-        netPayout: netPayout,
-        LgMargin: LgMargin,
-        advisor: payout,
-      });
-    }
-    return { resp: payoutsArray, count };
-  } catch (error) {
-    console.log('error: ' + error);
-    throw new Error('Error occurred', error);
-  }
 }
