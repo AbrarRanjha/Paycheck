@@ -34,9 +34,10 @@ class CommissionSplitController {
   async getALLCommissionSplit(req, res) {
     try {
       console.log("getALLCommissionSplit");
+      const id = req.params.id;
 
       const resp =
-        await CommissionSplitService.getAllCommissionSplitss();
+        await CommissionSplitService.getAllCommissionSplitss(id);
       return res.status(200).json({ CommissionSplit: resp });
     } catch (error) {
       res.status(500).json({ error: error.message });

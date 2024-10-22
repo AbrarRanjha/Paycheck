@@ -96,9 +96,9 @@ class commissionSplitService {
       throw new Error('Failed to get commissionSplit: ' + error.message);
     }
   }
-  async getAllCommissionSplitss() {
+  async getAllCommissionSplitss(uploadId) {
     try {
-      const resp = await commissionSplit.findAll();
+      const resp = await commissionSplit.findAll({ where: { uploadId } });
       return resp;
     } catch (error) {
       console.log('error', error);
