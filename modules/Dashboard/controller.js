@@ -13,8 +13,11 @@ class ErrorLogsController {
   }
   async totalGrossFCI(req, res) {
     try {
-      const { period } = req.body;
-      const resp = await DashboardService.getAllGrossFCIPeriodically(period);
+      const { month, year } = req.query; // Only month and year in the request body
+      if (month === undefined || year === undefined) {
+        return res.status(400).json({ error: "Please select both month and year" });
+      }
+      const resp = await DashboardService.getAllGrossFCIPeriodically(month, year);
       return res.status(200).json({ gross: resp });
     } catch (error) {
       res.status(500).json({ error: error.message });

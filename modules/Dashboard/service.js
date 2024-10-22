@@ -72,65 +72,34 @@ class errorLogsService {
     }
   }
 
-  async getAllGrossFCIPeriodically(period) {
+  async getAllGrossFCIPeriodically(selectedMonth, selectedYear) {
     try {
-      let data;
-      if (period == 'month') {
-        data = await SalesData.findAll({
-          attributes: [
-            [
-              Sequelize.fn(
-                'DATE_FORMAT',
-                Sequelize.col('paymentDate'),
-                '%Y-%m'
-              ),
-              'month',
-            ], // This groups by year-month
-            [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
-          ],
-          group: ['month'],
-          order: [
-            [
-              Sequelize.fn(
-                'DATE_FORMAT',
-                Sequelize.col('paymentDate'),
-                '%Y-%m'
-              ),
-              'ASC',
-            ],
-          ],
-        });
-      } else {
-        data = await SalesData.findAll({
-          attributes: [
-            [
-              Sequelize.fn(
-                'DATE_FORMAT',
-                Sequelize.col('paymentDate'),
-                '%Y-%u'
-              ),
-              'week',
-            ], // This groups by year-week
-            [Sequelize.fn('SUM', Sequelize.col('grossFCI')), 'totalGrossFCI'],
-          ],
-          group: ['week'],
-          order: [
-            [
-              Sequelize.fn(
-                'DATE_FORMAT',
-                Sequelize.col('paymentDate'),
-                '%Y-%u'
-              ),
-              'ASC',
-            ],
-          ],
-        });
-      }
+      let endDate
+      // Use the provided month (0-11) and year directly
+      const month = parseInt(selectedMonth);  // Convert month from string to number
+      const year = parseInt(selectedYear);    // Convert year from string to number
+
+      // Start date is the first day of the provided month and year
+      const startDate = new Date(year, month, 1);
+      // End date is the last day of the provided month and year
+      endDate = new Date(year, month + 1, 0); // Set to the last day of the month
+      endDate.setHours(23, 59, 59, 999);      // End of the day
+
+      console.log("startData", startDate, "//", endDate);
+
+      const data = await SalesData.findAll({
+        where: {
+          paymentDate: { [Op.between]: [startDate, endDate] }, // Filter by date range
+        },
+        attributes: [
+          [Sequelize.fn('COALESCE', Sequelize.fn('SUM', Sequelize.col('grossFCI')), 0), 'totalGrossFCI'], // Sum the grossFCI for the selected period
+        ],
+      });
 
       return data;
     } catch (error) {
       console.log('error', error);
-      throw new Error('Failed to get monthly GrossFCI: ' + error.message);
+      throw new Error('Failed to get GrossFCI: ' + error.message);
     }
   }
   async getAllEarlyPaymentPending() {
