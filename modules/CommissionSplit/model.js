@@ -4,6 +4,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
 const SalesData = require('../SaleData/model.js');
+const Upload = require('../upload/model.js');
 
 const CommissionSplit = sequelize.define(
   'CommissionSplit',
@@ -89,4 +90,6 @@ const CommissionSplit = sequelize.define(
 );
 SalesData.hasOne(CommissionSplit, { foreignKey: 'saleDataId', onDelete: 'CASCADE', });
 CommissionSplit.belongsTo(SalesData, { foreignKey: 'saleDataId' });
+Upload.hasMany(CommissionSplit, { foreignKey: 'uploadId', onDelete: 'CASCADE', });
+CommissionSplit.belongsTo(Upload, { foreignKey: 'uploadId' });
 module.exports = CommissionSplit;

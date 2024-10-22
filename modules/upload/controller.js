@@ -99,7 +99,7 @@ class UploadController {
               data,
               uploadData?.id
             );
-            await UploadService.calculateSplitCommission(saleData?.id, data);
+            await UploadService.calculateSplitCommission(uploadData?.id, saleData?.id, data);
             await UploadService.calculateAdvisorPayout(saleData?.id, uploadData?.id, data);
             await UploadService.SaveErrorlogsAndValidation(saleData?.id, data, uploadData?.id);
           }

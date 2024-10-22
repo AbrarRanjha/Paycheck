@@ -78,7 +78,7 @@ class commissionSplitService {
     }
   }
 
-  async getAllCommissionSplit(limit, skip) {
+  async getAllCommissionSplit(uploadId, limit, skip) {
     try {
       limit = parseInt(limit, 10);
       skip = parseInt(skip, 10);
@@ -87,8 +87,9 @@ class commissionSplitService {
       const resp = await commissionSplit.findAll({
         limit: limit,
         offset: skip,
+        where: { uploadId }
       });
-      const count = await commissionSplit.count();
+      const count = await commissionSplit.count({ where: { uploadId } });
       return { resp, count };
     } catch (error) {
       console.log('error', error);

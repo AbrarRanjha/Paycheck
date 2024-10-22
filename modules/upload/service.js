@@ -129,7 +129,7 @@ class uploadService {
     const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
     return date.toLocaleString();
   }
-  async calculateSplitCommission(saleDataID, data) {
+  async calculateSplitCommission(uploadId, saleDataID, data) {
     try {
       let paymentDate;
       if (typeof data.PaymentDate == 'number') {
@@ -156,6 +156,7 @@ class uploadService {
         paymentDate,
         planType: data?.PlanType,
         clientName: data?.ClientName,
+        uploadId,
         ...(isAdviser
           ? {
             advisorId: data?.SellingAdviserName?.trim()

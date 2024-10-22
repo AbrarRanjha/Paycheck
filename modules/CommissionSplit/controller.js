@@ -19,11 +19,13 @@ class CommissionSplitController {
   async getCommissionSplit(req, res) {
     try {
       const { limit, skip } = req.query;
+      const id = req.params.id;
+
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
       const { resp, count } =
-        await CommissionSplitService.getAllCommissionSplit(limit, skip);
+        await CommissionSplitService.getAllCommissionSplit(id, limit, skip);
       return res.status(200).json({ CommissionSplit: resp, count: count });
     } catch (error) {
       res.status(500).json({ error: error.message });
