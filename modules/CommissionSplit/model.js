@@ -70,7 +70,10 @@ const CommissionSplit = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
-
+    incomeType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     // clientId: {
     //   type: DataTypes.STRING,
     //   allowNull: true,

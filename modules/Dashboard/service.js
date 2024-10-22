@@ -230,6 +230,23 @@ class errorLogsService {
       throw new Error('Failed to get error logs: ' + error.message);
     }
   }
+  async totalIncomesTypess() {
+    try {
+      const allLogs = await SalesData.findAll({
+        distinct: true,
+        col: 'incomeType',
+        attributes: [
+          [Sequelize.fn('DISTINCT', Sequelize.col('incomeType')), 'incomeType'],
+
+        ],
+        group: ['incomeType']
+      });
+      return allLogs;
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to get error logs: ' + error.message);
+    }
+  }
   async totalProductsCount() {
     try {
       const allLogs = await SalesData.count({
@@ -246,7 +263,7 @@ class errorLogsService {
     try {
       const allLogs = await CommissionSplit.count({
         distinct: true,
-        col: 'splitType',
+        col: 'incomeType',
       });
       return allLogs;
     } catch (error) {
@@ -254,98 +271,76 @@ class errorLogsService {
       throw new Error('Failed to get error logs: ' + error.message);
     }
   }
-  async calculateForEachAdvisor(selectedPeriod, productType, advisor) {
+  async calculateForEachAdvisor(productType, advisor, commissionType, selectedMonth = null, selectedYear = null) {
     try {
-      const date = new Date();
       let startDate, endDate;
+      const results = [];
 
-      // Define the date range based on the selected period
-      if (selectedPeriod === "monthly") {
+      // If month and year are provided, use them. Otherwise, default to current month and year.
+      if (selectedMonth !== null && selectedYear !== null) {
+        const month = parseInt(selectedMonth);  // Convert month to number
+        const year = parseInt(selectedYear);    // Convert year to number
+
+        // Calculate start and end dates for the selected month
+        startDate = new Date(year, month, 1);  // First day of the selected month
+        endDate = new Date(year, month + 1, 0); // Last day of the selected month
+        endDate.setHours(23, 59, 59, 999);      // End of the day on the last day
+      } else {
+        const date = new Date();
+        // Default to the current month if no month and year are provided
         startDate = new Date(date.getFullYear(), date.getMonth(), 1);
         endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         endDate.setHours(23, 59, 59, 999);
-      } else if (selectedPeriod === "weekly") {
-        const startOfWeek = new Date(date);
-        const dayOfWeek = date.getDay();
-        startOfWeek.setDate(date.getDate() - dayOfWeek);
-        startOfWeek.setHours(0, 0, 0, 0);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999);
-
-        startDate = startOfWeek;
-        endDate = endOfWeek;
       }
+
+      console.log("Start Date:", startDate);
+      console.log("End Date:", endDate);
 
       // Filter for totals without the advisor constraint to calculate percentages
       const overallFilter = { paymentDate: { [Op.between]: [startDate, endDate] } };
-      if (productType) overallFilter.planType = productType;
-
       const totalCommissionAll = await SalesData.sum('FCIRecognition', { where: overallFilter });
       const totalProductsAll = await SalesData.count({ distinct: true, col: 'planType', where: overallFilter });
+      const totalCommisonType = await SalesData.count({ distinct: true, col: 'incomeType', where: overallFilter });
       const totalSplitsAll = await CommissionSplit.count({ distinct: true, col: 'splitType', where: overallFilter });
 
-      const results = [];
-      if (selectedPeriod === "weekly") {
-        // Weekly period: aggregate by day
-        const dailyFilter = { paymentDate: { [Op.between]: [startDate, endDate] } };
-        if (productType) dailyFilter.planType = productType;
-        if (advisor) dailyFilter.advisorName = advisor;
+      console.log("totalCommisonType", totalCommisonType);
+      const weeksInMonth = Math.ceil((endDate - startDate) / (7 * 24 * 60 * 60 * 1000));
+      for (let week = 0; week < weeksInMonth; week++) {
+        const weekStart = new Date(startDate);
+        weekStart.setDate(startDate.getDate() + (week * 7)); // Start of the week
+        weekStart.setHours(0, 0, 0, 0);
 
-        for (let i = 0; i < 7; i++) {
-          const dayStart = new Date(startDate);
-          dayStart.setDate(startDate.getDate() + i);
-          dayStart.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6); // End of the week
+        weekEnd.setHours(23, 59, 59, 999);
 
-          const dayEnd = new Date(dayStart);
-          dayEnd.setHours(23, 59, 59, 999);
-
-          const daySpecificFilter = { ...dailyFilter, paymentDate: { [Op.between]: [dayStart, dayEnd] } };
-          const totalCommission = await SalesData.sum('FCIRecognition', { where: daySpecificFilter });
-          const productCount = await SalesData.count({ where: daySpecificFilter, distinct: true, col: 'planType' });
-          const splitCount = await CommissionSplit.count({ where: daySpecificFilter, distinct: true, col: 'splitType' });
-
-          results.push({
-            period: `Day ${i + 1}`,
-            totalCommission,
-            productCount,
-            splitCount,
-            commissionPercentage: totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0,
-            productPercentage: totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0,
-            splitPercentage: totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0,
-          });
+        // Ensure the weekEnd does not go beyond the end of the month
+        if (weekEnd > endDate) {
+          weekEnd.setTime(endDate.getTime());
         }
-      } else if (selectedPeriod === "monthly") {
-        // Monthly period: aggregate by week
-        const weeksInMonth = Math.ceil((endDate - startDate) / (7 * 24 * 60 * 60 * 1000));
-        const weeklyFilter = { paymentDate: { [Op.between]: [startDate, endDate] } };
-        if (productType) weeklyFilter.planType = productType;
-        if (advisor) weeklyFilter.advisorName = advisor;
 
-        for (let i = 0; i < weeksInMonth; i++) {
-          const weekStart = new Date(startDate);
-          weekStart.setDate(startDate.getDate() + i * 7);
-          weekStart.setHours(0, 0, 0, 0);
+        // Apply filters for this specific week
+        const weekSpecificFilter = { paymentDate: { [Op.between]: [weekStart, weekEnd] } };
+        if (productType) weekSpecificFilter.planType = productType;
+        if (advisor) weekSpecificFilter.advisorName = advisor;
+        if (commissionType) weekSpecificFilter.incomeType = commissionType;
 
-          const weekEnd = new Date(weekStart);
-          weekEnd.setDate(weekStart.getDate() + 6);
-          weekEnd.setHours(23, 59, 59, 999);
+        const totalCommission = await SalesData.sum('FCIRecognition', { where: weekSpecificFilter });
+        const productCount = await SalesData.count({ where: weekSpecificFilter, distinct: true, col: 'planType' });
+        const splitCount = await CommissionSplit.count({ where: weekSpecificFilter, distinct: true, col: 'splitType' });
+        const commissionCount = await SalesData.count({ where: weekSpecificFilter, distinct: true, col: 'incomeType' });
 
-          const weekSpecificFilter = { ...weeklyFilter, paymentDate: { [Op.between]: [weekStart, weekEnd] } };
-          const totalCommission = await SalesData.sum('FCIRecognition', { where: weekSpecificFilter });
-          const productCount = await SalesData.count({ where: weekSpecificFilter, distinct: true, col: 'planType' });
-          const splitCount = await CommissionSplit.count({ where: weekSpecificFilter, distinct: true, col: 'splitType' });
-
-          results.push({
-            period: `Week ${i + 1}`,
-            totalCommission,
-            productCount,
-            splitCount,
-            commissionPercentage: totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0,
-            productPercentage: totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0,
-            splitPercentage: totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0,
-          });
-        }
+        results.push({
+          period: `Week ${week + 1}`,
+          totalCommission,
+          productCount,
+          splitCount,
+          commissionCount,
+          commissionPercentage: totalCommissionAll > 0 ? (totalCommission / totalCommissionAll) * 100 : 0,
+          productPercentage: totalProductsAll > 0 ? (productCount / totalProductsAll) * 100 : 0,
+          splitPercentage: totalSplitsAll > 0 ? (splitCount / totalSplitsAll) * 100 : 0,
+          incomePercentage: totalCommisonType > 0 ? (commissionCount / totalCommisonType) * 100 : 0,
+        });
       }
 
       return results;
@@ -354,6 +349,77 @@ class errorLogsService {
       throw new Error('Failed to calculate values: ' + error.message);
     }
   }
+
+
+  async downloadForEachAdvisor(productType, advisor, commissionType, selectedMonth, selectedYear) {
+    try {
+      let startDate, endDate;
+
+      if (selectedMonth !== null && selectedYear !== null) {
+        // If month and year are provided, calculate the start and end dates based on the month and year
+        const month = parseInt(selectedMonth);  // Convert month from string to number
+        const year = parseInt(selectedYear);    // Convert year from string to number
+
+        // Start date is the first day of the provided month and year
+        startDate = new Date(year, month, 1);
+        // End date is the last day of the provided month and year
+        endDate = new Date(year, month + 1, 0); // Set to the last day of the month
+        endDate.setHours(23, 59, 59, 999);      // End of the day
+
+        console.log("Using specific month and year:");
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+      } else {
+        // If no specific month and year are provided, use the current month and year
+        const date = new Date();
+        startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+        endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        endDate.setHours(23, 59, 59, 999); // End of the month
+
+        console.log("Using current month and year:");
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+      }
+
+      // Filter the data based on the input parameters
+      const filter = { paymentDate: { [Op.between]: [startDate, endDate] } };
+      if (productType) filter.planType = productType;
+      if (advisor) filter.advisorName = advisor;
+      if (commissionType) filter.incomeType = commissionType;
+
+      // Fetching the filtered data from the SalesData table, grouped by advisorName, month, planType, and incomeType
+      const salesData = await SalesData.findAll({
+        where: filter,
+        attributes: [
+          'advisorName',
+          'planType',
+          'incomeType',
+          [Sequelize.fn('sum', Sequelize.col('FCIRecognition')), 'totalFCIRecognition'],
+          [Sequelize.fn('DATE_FORMAT', Sequelize.col('paymentDate'), '%Y-%m'), 'month'], // Format the paymentDate to get the month
+        ],
+        group: ['advisorName', 'month', 'planType', 'incomeType'], // Grouping by advisorName, month, planType, and incomeType
+      });
+
+      // Prepare the response in the required format
+      const results = salesData.map(item => ({
+        'Advisor Name': item.advisorName,
+        'Month': `${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`, // Dynamically set the month and year
+        'Product Type': item.planType,
+        'Monthly commission type': item.incomeType,
+        'Total FCI Recognition': item.getDataValue('totalFCIRecognition'), // Get the summed FCIRecognition
+      }));
+
+      // Send the response to the UI
+      return results;
+
+    } catch (error) {
+      console.log('error', error);
+      throw new Error('Failed to fetch advisor data: ' + error.message);
+    }
+  }
+
+
+
 
 
 

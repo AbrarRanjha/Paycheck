@@ -100,6 +100,14 @@ class ErrorLogsController {
       res.status(500).json({ error: error.message });
     }
   }
+  async getTotalIncomeTypes(req, res) {
+    try {
+      const resp = await DashboardService.totalIncomesTypess();
+      return res.status(200).json({ products: resp });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
   async getTotalSplit(req, res) {
     try {
       const resp = await DashboardService.totalSplits();
@@ -110,17 +118,34 @@ class ErrorLogsController {
   }
   async getAdvisorBase(req, res) {
     try {
-      const { period, productType, advisor } = req.query
-      const selectedPeriod = period;
-      console.log("selectedPeriod", selectedPeriod);
+      const { productType, advisor, commissionType, month, year } = req.query;
+      console.log("Month:", month, "Year:", year);
 
-      const resp = await DashboardService.calculateForEachAdvisor(selectedPeriod, productType, advisor);
+      const resp = await DashboardService.calculateForEachAdvisor(productType, advisor, commissionType, month, year);
       return res.status(200).json({ advisorBase: resp });
     } catch (error) {
       console.log('error', error);
       res.status(500).json({ error: error.message });
     }
   }
+
+  async downloadAdvisorBase(req, res) {
+    try {
+      const { period, productType, advisor, commissionType, month, year } = req.query;
+      const selectedPeriod = period;
+
+      console.log("selectedPeriod", selectedPeriod);
+
+      // Pass month and year to the service function
+      const resp = await DashboardService.downloadForEachAdvisor(productType, advisor, commissionType, month, year);
+
+      return res.status(200).json({ advisorBase: resp });
+    } catch (error) {
+      console.log('error', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async getNotifications(req, res) {
     try {
       const resp = await DashboardService.getNotificationOfManager(req.user.id);

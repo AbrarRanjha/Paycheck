@@ -2,7 +2,7 @@
 const EmployeeService = require('./service.js');
 
 class EmployeeController {
-  constructor() {}
+  constructor() { }
 
   async createEmployeeController(req, res) {
     try {
@@ -47,6 +47,7 @@ class EmployeeController {
         return res.status(400).json({ message: 'invalid Creditionals' });
       }
       const accessToken = EmployeeService.generateAccessToken(user.id);
+
       const userData = {
         ...user,
         accessToken,
@@ -145,7 +146,7 @@ class EmployeeController {
         profileImageUrl: imageUrl,
       });
       console.log("employee updated", JSON.stringify(employee));
-      
+
       await EmployeeService.updateEmailHistory(
         employee?.email,
         employee.firstName,

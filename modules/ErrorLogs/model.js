@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
 const SalesData = require('../SaleData/model.js');
+const Upload = require('../upload/model.js');
 
 const ErrorLogs = sequelize.define('ErrorLogs', {
   id: {
@@ -43,4 +44,6 @@ const ErrorLogs = sequelize.define('ErrorLogs', {
 });
 SalesData.hasMany(ErrorLogs, { foreignKey: 'saleDataId', onDelete: 'CASCADE', });
 ErrorLogs.belongsTo(SalesData, { foreignKey: 'saleDataId' });
+Upload.hasMany(ErrorLogs, { foreignKey: 'uploadId', onDelete: 'CASCADE', });
+ErrorLogs.belongsTo(Upload, { foreignKey: 'uploadId' });
 module.exports = ErrorLogs;

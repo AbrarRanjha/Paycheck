@@ -38,7 +38,7 @@ const ExpensesDetail = sequelize.define(
             allowNull: true,
         },
         expensesArray: {
-            type: DataTypes.JSON,
+            type: DataTypes.STRING,
             allowNull: true,
         },
         advances: {
@@ -67,6 +67,6 @@ const ExpensesDetail = sequelize.define(
         timestamps: true,
     }
 );
-Payout.hasMany(ExpensesDetail, { foreignKey: 'PayoutID', });
+Payout.hasMany(ExpensesDetail, { foreignKey: 'PayoutID', onDelete: 'CASCADE', });
 ExpensesDetail.belongsTo(Payout, { foreignKey: 'PayoutID' });
 module.exports = ExpensesDetail;

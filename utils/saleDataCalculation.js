@@ -73,7 +73,10 @@ const handleZeroPercentagePayable = async (
   commissionRecord.splitAmount = grossValue;
   PayoutRecord.advisorSplitAmount = grossValue;
   commissionRecord.FCIRecognition = 0;
+  PayoutRecord.FCIRecognition = 0;
   await commissionRecord.save();
+  await existingSaleData.save();
+  await PayoutRecord.save();
 };
 const handleZeroGrossFCI = async (
   existingSaleData,
@@ -119,6 +122,10 @@ const handleNonZeroPercentagePayable = async (
     grossFCI,
     data.percentagePayable
   );
+  PayoutRecord.FCIRecognition = calculateFCIRecognition(
+    grossFCI,
+    data.percentagePayable
+  );
   await PayoutRecord.save();
   await commissionRecord.save();
 };
@@ -143,6 +150,10 @@ const handleNonZeroGrossFCI = async (
   const newSplitAmount = calculateSplitAmount(grossFCI, splitPercentage);
   commissionRecord.splitAmount = newSplitAmount;
   PayoutRecord.advisorSplitAmount = newSplitAmount;
+  PayoutRecord.FCIRecognition = calculateFCIRecognition(
+    grossFCI,
+    existingSaleData.percentagePayable
+  );
   commissionRecord.grossFCI = grossFCI;
   PayoutRecord.grossFCI = grossFCI;
   commissionRecord.FCIRecognition = calculateFCIRecognition(

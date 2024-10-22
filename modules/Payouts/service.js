@@ -186,11 +186,13 @@ class PayoutService {
           PayoutID: id,
           month: currentMonth,
           year: currentYear,
-          expensesArray: [],
+          expensesArray: "[]",
           expenses: 0
         });
       }
-      payoutRecord.expensesArray = [...payoutRecord.expensesArray, ...expenses];
+      let expensesArray
+      expensesArray = JSON.parse(payoutRecord.expensesArray)
+      payoutRecord.expensesArray = JSON.stringify([...expensesArray, ...expenses]);
       const totalNewExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
       payoutRecord.expenses = (payoutRecord.expenses || 0) + totalNewExpenses;
 
@@ -214,7 +216,16 @@ class PayoutService {
           year: currentYear
         }
       });
-      payoutRecord.expensesArray = expenses;
+      if (!payoutRecord) {
+        payoutRecord = await ExpensesDetail.create({
+          PayoutID: id,
+          month: currentMonth,
+          year: currentYear,
+          expensesArray: "",
+          expenses: 0
+        });
+      }
+      payoutRecord.expensesArray = JSON.stringify(expenses);
       const totalAmount = expenses.reduce((sum, elm) => sum + elm.amount, 0);
       payoutRecord.expenses = totalAmount;
       const updatedPayoutData = await payoutRecord.save();

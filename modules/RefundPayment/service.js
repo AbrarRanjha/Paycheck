@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const RefundPaymentModel = require('./model.js');
 const Payout = require('../Payouts/model.js');
 const ManagerNotification = require('../EarlyPayment/Notification.js');
+const ExpensesDetail = require('../Payouts/ExpensesDetail.js');
 class RefundPaymentModelService {
   async getRefundPaymentById(id) {
     try {
@@ -47,10 +48,11 @@ class RefundPaymentModelService {
           where: { advisorId: RefundPayment?.employeeId },
         });
         console.log('payoutDetail', PayoutDetail);
+        const expensesDetail = await ExpensesDetail.findOne({ where: { PayoutID: PayoutDetail.id } });
 
-        PayoutDetail.advances =
-          PayoutDetail.advances + RefundPayment?.requestPaymentAmount;
-        await PayoutDetail.save();
+        expensesDetail.advances =
+          expensesDetail.advances + RefundPayment?.requestPaymentAmount;
+        await expensesDetail.save();
         await ManagerNotification.create({
           date: new Date(),
           note: `${adminName} Approved the Refund request`,

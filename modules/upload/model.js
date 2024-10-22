@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-// /modules/upload/upload.js
-
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
 const Upload = sequelize.define(

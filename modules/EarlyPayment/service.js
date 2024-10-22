@@ -3,6 +3,7 @@ const EarlyPaymentModel = require('./model.js');
 const Payout = require('../Payouts/model.js');
 const User = require('../user/model.js');
 const ManagerNotification = require('./Notification.js');
+const ExpensesDetail = require('../Payouts/ExpensesDetail.js');
 class EarlyPaymentModelService {
   async getEarlyPaymentById(id) {
     try {
@@ -48,11 +49,12 @@ class EarlyPaymentModelService {
         const PayoutDetail = await Payout.findOne({
           where: { advisorId: earlyPayment?.advisorId },
         });
+        const expensesDetail = await ExpensesDetail.findOne({ where: { PayoutID: PayoutDetail.id } });
         console.log('payoutDetail', PayoutDetail);
 
-        PayoutDetail.advances =
-          PayoutDetail.advances + earlyPayment?.requestPaymentAmount;
-        await PayoutDetail.save();
+        expensesDetail.advances =
+          expensesDetail.advances + earlyPayment?.requestPaymentAmount;
+        await expensesDetail.save();
         console.log('earlyPayment', earlyPayment);
 
         await ManagerNotification.create({

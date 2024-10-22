@@ -19,6 +19,7 @@ const Payout = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+
   },
   {
     timestamps: true,

@@ -146,12 +146,13 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
         totalDeduction = 0,
         netPayout = 0;
       LgMargin = 0;
-
+      let advisorDetails = [];
       payout.advisorDetails.forEach(detail => {
         const detailCreatedAt = moment(detail.date);
 
         if (selectedPeriod === 'weekly') {
           if (detailCreatedAt.week() === currentWeek && detailCreatedAt.year() === currentYear) {
+            advisorDetails.push(detail);
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
@@ -163,6 +164,8 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
 
 
           if (detailCreatedAt.month() === monthToCompare && detailCreatedAt.year() === yearToCompare) {
+            advisorDetails.push(detail);
+
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
@@ -181,20 +184,24 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
       });
 
 
-
-      totalDeduction =
-        periodExpenses?.deduction +
-        periodExpenses?.loanRepayment +
-        periodExpenses?.expenses +
-        periodExpenses?.amountPaid +
-        periodExpenses?.payAways;
-      netPayout =
-        totalAdvisorSplit +
-        periodExpenses?.advisorBalance +
-        periodExpenses?.advances -
-        totalDeduction;
+      if (periodExpenses) {
+        totalDeduction =
+          periodExpenses?.deduction +
+          periodExpenses?.loanRepayment +
+          periodExpenses?.expenses +
+          periodExpenses?.amountPaid +
+          periodExpenses?.payAways;
+        netPayout =
+          totalAdvisorSplit +
+          periodExpenses?.advisorBalance +
+          periodExpenses?.advances -
+          totalDeduction;
+      } else {
+        netPayout =
+          totalAdvisorSplit
+      }
       if (periodExpenses?.datePaid && moment(periodExpenses?.datePaid).isBefore(currentDate)) {
-        netPayout -= periodExpenses?.amountPaid;
+        netPayout = netPayout - periodExpenses?.amountPaid;
       }
       payoutsArray.push({
         advisorName: payout.advisorName,
@@ -206,7 +213,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
         netPayout: netPayout,
         LgMargin: LgMargin,
         advisor: periodExpenses,
-        advisorDetails: payout.advisorDetails
+        advisorDetails
       });
     }
     return { resp: payoutsArray, count };
@@ -216,13 +223,16 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod, specifiedMont
   }
 }
 
-async function getAllAdvisorPayoutPeriod(selectedPeriod) {
+async function getAllAdvisorPayoutPeriod(selectedPeriod, specifiedMonth, specifiedYear) {
   try {
     let payoutsArray = [];
     const { Payouts, count } = await PayoutService.getAllPayouts();
     const currentWeek = moment().week();
     const currentMonth = moment().month();
-
+    const currentDate = moment();
+    const currentYear = moment().year();
+    const monthToCompare = specifiedMonth ? parseInt(specifiedMonth, 10) : currentMonth;
+    const yearToCompare = specifiedYear ? parseInt(specifiedYear, 10) : currentYear;
     for (let index = 0; index < Payouts.length; index++) {
       const payout = Payouts[index];
       let totalGrossFCI = 0,
@@ -230,12 +240,13 @@ async function getAllAdvisorPayoutPeriod(selectedPeriod) {
         totalDeduction = 0,
         netPayout = 0;
       LgMargin = 0;
-
+      let advisorDetails = [];
       payout.advisorDetails.forEach(detail => {
         const detailCreatedAt = moment(detail.date);
 
         if (selectedPeriod === 'weekly') {
           if (detailCreatedAt.week() === currentWeek && detailCreatedAt.year() === currentYear) {
+            advisorDetails.push(detail);
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
@@ -247,27 +258,44 @@ async function getAllAdvisorPayoutPeriod(selectedPeriod) {
 
 
           if (detailCreatedAt.month() === monthToCompare && detailCreatedAt.year() === yearToCompare) {
+            advisorDetails.push(detail);
+
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
           }
         }
       });
+      console.log("monthToCompare", monthToCompare, yearToCompare);
 
-      if (specifiedMonth && specifiedYear) {
-        netPayout = totalAdvisorSplit
-      } else {
+      let periodExpenses = await ExpensesDetail.findOne({
+        where: {
+          PayoutID: payout.id,
+          month: monthToCompare,
+          year: yearToCompare
+        },
+        raw: true
+      });
+
+
+      if (periodExpenses) {
         totalDeduction =
-          payout.deduction +
-          payout.loanRepayment +
-          payout.expenses +
-          payout.amountPaid +
-          payout.payAways;
+          periodExpenses?.deduction +
+          periodExpenses?.loanRepayment +
+          periodExpenses?.expenses +
+          periodExpenses?.amountPaid +
+          periodExpenses?.payAways;
         netPayout =
           totalAdvisorSplit +
-          payout.advisorBalance +
-          payout.advances -
+          periodExpenses?.advisorBalance +
+          periodExpenses?.advances -
           totalDeduction;
+      } else {
+        netPayout =
+          totalAdvisorSplit
+      }
+      if (periodExpenses?.datePaid && moment(periodExpenses?.datePaid).isBefore(currentDate)) {
+        netPayout = netPayout - periodExpenses?.amountPaid;
       }
       payoutsArray.push({
         advisorName: payout.advisorName,
@@ -278,8 +306,10 @@ async function getAllAdvisorPayoutPeriod(selectedPeriod) {
         totalDeduction: totalDeduction,
         netPayout: netPayout,
         LgMargin: LgMargin,
-        advisor: payout,
+        advisor: periodExpenses,
+        advisorDetails
       });
+
     }
     return { resp: payoutsArray, count };
   } catch (error) {

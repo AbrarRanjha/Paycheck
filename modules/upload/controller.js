@@ -88,7 +88,6 @@ class UploadController {
         originalFileName,
         category
       );
-      const erroLogs = await UploadService.clearErrorLogs();
       for (const data of jsonData) {
         console.log('data: ' + JSON.stringify(data));
         if (data?.IORef) {
@@ -102,7 +101,7 @@ class UploadController {
             );
             await UploadService.calculateSplitCommission(saleData?.id, data);
             await UploadService.calculateAdvisorPayout(saleData?.id, uploadData?.id, data);
-            await UploadService.SaveErrorlogsAndValidation(saleData?.id, data);
+            await UploadService.SaveErrorlogsAndValidation(saleData?.id, data, uploadData?.id);
           }
           results.push(data);
         }

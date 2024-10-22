@@ -33,6 +33,7 @@ class commissionSplitService {
             commissionRecord.splitAmount = 0;
             existingSaleData.payable = grossValue;
             existingSaleData.FCIRecognition = grossValue;
+            PayoutRecord.FCIRecognition = grossValue;
             commissionRecord.FCIRecognition = grossValue;
             existingSaleData.percentagePayable = 100;
             PayoutRecord.advisorSplitPercentage = 0;
@@ -49,6 +50,7 @@ class commissionSplitService {
             const payable = calculateSplitAmount(grossValue, percentagePayable);
             existingSaleData.payable = payable;
             existingSaleData.FCIRecognition = payable;
+            PayoutRecord.FCIRecognition = payable;
             PayoutRecord.advisorSplitPercentage = data.splitPercentage;
             PayoutRecord.advisorSplitAmount =
               grossValue * (data.splitPercentage / 100);

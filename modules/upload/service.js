@@ -150,6 +150,7 @@ class uploadService {
         grossFCI: parseFloat(data?.GrossFCI.toFixed(2)),
         premium: data?.Premium,
         frequency: data?.Frequency,
+        incomeType: data?.IncomeType,
         FCIRecognition: parseFloat(data?.FCIRecognition.toFixed(2)),
         splitType: data?.RecipientType,
         paymentDate,
@@ -212,7 +213,7 @@ class uploadService {
         const Payouts = await Payout.create(payoutData);
         await advisorDetail.create({
           PayoutID: Payouts.id,
-          UploadId: uploadId,
+          uploadId: uploadId,
           transactionID: data?.IORef,
           advisorSplitAmount: parseFloat(splitAmount.toFixed(2)),
           advisorSplitPercentage: parseFloat(splitPercentage.toFixed(2)),
@@ -227,7 +228,7 @@ class uploadService {
     }
   }
 
-  async SaveErrorlogsAndValidation(saleDataID, data) {
+  async SaveErrorlogsAndValidation(saleDataID, data, uploadId) {
     const errors = [];
     const errorLocation = 'CommisonData';
     // Validate transactionID
@@ -415,6 +416,7 @@ class uploadService {
         validationKey: error.validationKey,
         date: new Date(),
         status: error.status,
+        uploadId
       });
     }
 
@@ -459,6 +461,7 @@ class uploadService {
         percentagePayable: parseFloat(data?.PercentagePayable.toFixed(2)),
         cashType: data?.CashType,
         cashMatchId: data?.CashMatchId,
+        incomeType: data?.IncomeType,
         premium: data?.Premium,
         frequency: data?.Frequency,
         plzNumber: data?.PlZnNumber,

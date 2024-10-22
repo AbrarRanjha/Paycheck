@@ -36,13 +36,13 @@ class EmailHistoryController {
   async createEmailHistory(req, res) {
     try {
       const data = req.body;
-      let uploadedFile;
+      let uploadedFile, imageUrl;
       if ('file' in req && req.file) {
         uploadedFile = req.file;
+        imageUrl =
+          `${req.protocol}://${req.headers.host}/static/${uploadedFile.filename}`
       }
-      const imageUrl = uploadedFile
-        ? `${req.protocol}://${req.headers.host}/static/${uploadedFile.filename}`
-        : exisEmployee.profileImageUrl;
+
       const emailHistory = await EmailHistoryService.createEmailHistory({
         ...data,
         pdfFile: imageUrl,

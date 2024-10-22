@@ -18,6 +18,7 @@ class ErrorLogsController {
   async updateErrorLogsById(req, res) {
     try {
       const { limit, skip } = req.query;
+      const { uploadId } = req.params;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
@@ -29,12 +30,14 @@ class ErrorLogsController {
           if (element.updatedFields.status == 'Approved') {
             await ErrorLogsService.validateError(
               element.id,
-              element.updatedFields.status
+              element.updatedFields.status,
+              uploadId
             );
+
           }
         }
       }
-      const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit, skip);
+      const ErrorLogs = await ErrorLogsService.getAllErrorLogs(limit, skip, uploadId);
       return res.status(200).json(ErrorLogs);
     } catch (error) {
       console.log('error', error);
@@ -45,12 +48,14 @@ class ErrorLogsController {
   async getErrorLogs(req, res) {
     try {
       const { limit, skip } = req.query;
+      const { uploadId } = req.params;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
       const { resp, count } = await ErrorLogsService.getAllErrorLogs(
         limit,
-        skip
+        skip,
+        uploadId
       );
       return res.status(200).json({ ErrorLogs: resp, count: count });
     } catch (error) {
@@ -59,8 +64,10 @@ class ErrorLogsController {
   }
   async getAllErrorLogs(req, res) {
     try {
-      const { resp, count } = await ErrorLogsService.getAllErrorLogss();
-      return res.status(200).json({ ErrorLogs: resp, count: count });
+      const { uploadId } = req.params;
+      const { errorLogs, count } = await ErrorLogsService.getErrorLogsByUploadId(uploadId);
+      return res.status(200).json({ ErrorLogs: errorLogs, count: count });
+
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -68,15 +75,16 @@ class ErrorLogsController {
   async getErrorLogsWithSaleData(req, res) {
     try {
       const { limit, skip } = req.query;
+      const { uploadId } = req.params;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
-      }
-      const { validations, count } = await ErrorLogsService.getAllErrorLogsSale(
+      } const { validations, count } = await ErrorLogsService.getAllErrorLogsSale(
         limit,
-        skip
+        skip,
+        uploadId
       );
-
       return res.status(200).json({ validations, count });
+
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

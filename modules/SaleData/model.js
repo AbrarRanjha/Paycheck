@@ -80,6 +80,10 @@ const SalesData = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    incomeType: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     cashMatchId: {
       type: DataTypes.INTEGER,
       allowNull: true,
