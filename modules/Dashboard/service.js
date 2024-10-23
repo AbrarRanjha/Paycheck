@@ -371,11 +371,11 @@ class errorLogsService {
 
       // Prepare the response in the required format
       const results = salesData.map(item => ({
-        'Advisor Name': item.advisorName,
-        'Month': `${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`, // Dynamically set the month and year
-        'Product Type': item.planType,
-        'Monthly commission type': item.incomeType,
-        'Total FCI Recognition': item.getDataValue('totalFCIRecognition'), // Get the summed FCIRecognition
+        'advisorName': item.advisorName,
+        'month': `${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`, // Dynamically set the month and year
+        'productType': item.planType,
+        'monthlyCommission type': item.incomeType,
+        'totalFCIRecognition': item.getDataValue('totalFCIRecognition'), // Get the summed FCIRecognition
       }));
 
       // Send the response to the UI
