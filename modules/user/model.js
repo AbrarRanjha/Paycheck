@@ -59,11 +59,34 @@ const User = sequelize.define(
     notificationList: {
       type: DataTypes.JSON,
     },
+    permissions: {
+      type: DataTypes.JSON,
+      defaultValue: {}, // Default to an empty object
+    },
   },
   {
     timestamps: true,
   }
 );
+// Hook to set permissions based on role
+User.beforeCreate(user => {
+  if (user.role === 'manager') {
+    user.permissions = {
+      dashboard: true,
+      margin: true,
+      errorLog: true,
+      commissionSplits: true,
+      advisorPayout: true,
+      advisorReport: true,
+      mailBox: true,
+      support: true,
+      dataUpload: true,
+    };
+  } else {
+    user.permissions = {};
+  }
+});
+
 User.hasMany(ManagerNotification, { foreignKey: 'managerId' });
 ManagerNotification.belongsTo(User, {
   foreignKey: 'managerId',

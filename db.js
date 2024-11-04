@@ -21,4 +21,3 @@ const sequelize = new Sequelize(
 );
 
 module.exports = { sequelize };
-console.log(sequelize.models);

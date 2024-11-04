@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const { Router } = require('express');
-const userRoutes = require('./User/index.js');
+const userRoutes = require('./user/index.js');
 const uploadRoutes = require('./Upload/index.js');
 const saleDataRoutes = require('./SaleData/index.js');
 const refundRoutes = require('./RefundPayment/index.js');
