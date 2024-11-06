@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
-const Upload = require('../Upload/model.js');
+const Upload = require('../upload/model.js');
 
 const SalesData = sequelize.define(
   'SalesData',

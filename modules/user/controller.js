@@ -49,6 +49,7 @@ class EmployeeController {
       const accessToken = EmployeeService.generateAccessToken(user.id);
       const userData = {
         ...user,
+        permissions: JSON.parse(user.permissions || '{}'),
         accessToken,
       };
       res.status(201).json({ message: 'login successfully', data: userData });
@@ -166,6 +167,7 @@ class EmployeeController {
     try {
       const { id } = req.params; // Get the employee ID from route parameters
       const permissionsData = req.body.permissions; // Expect permissions data in the request body
+      // const permissionsData = JSON.stringify(permissionsData2);
 
       if (!permissionsData) {
         return res.status(400).json({ error: 'Permissions data is required' });

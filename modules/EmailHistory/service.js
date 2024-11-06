@@ -1,4 +1,4 @@
-const User = require('../User/model.js');
+const User = require('../user/model.js');
 const EmailHistory = require('./model.js');
 
 class EmailHistoryService {
@@ -27,7 +27,7 @@ class EmailHistoryService {
     try {
       const histories = await EmailHistory.findAll({
         where: { senderEmail: email },
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
       });
       return histories;
     } catch (error) {

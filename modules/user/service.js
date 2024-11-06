@@ -1,4 +1,4 @@
-// modules/User/service.js
+// modules/user/service.js
 
 /* eslint-disable no-undef */
 const jwt = require('jsonwebtoken');
@@ -76,7 +76,7 @@ class EmployeeService {
 
       // Perform the update with only the permissions field
       await Employee.update(
-        { permissions: updatedPermissions },
+        { permissions: JSON.stringify(updatedPermissions) },
         {
           where: { id: id },
         }

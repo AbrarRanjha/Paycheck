@@ -60,8 +60,15 @@ const User = sequelize.define(
       type: DataTypes.JSON,
     },
     permissions: {
-      type: DataTypes.JSON,
-      defaultValue: {}, // Default to an empty object
+      type: DataTypes.STRING,
+      defaultValue: '{}', // Store as an empty JSON object in string form
+      get() {
+        const rawValue = this.getDataValue('permissions');
+        return rawValue ? JSON.parse(rawValue) : {};
+      },
+      set(value) {
+        this.setDataValue('permissions', JSON.stringify(value));
+      },
     },
   },
   {
@@ -71,7 +78,7 @@ const User = sequelize.define(
 // Hook to set permissions based on role
 User.beforeCreate(user => {
   if (user.role === 'manager') {
-    user.permissions = {
+    user.permissions = JSON.stringify({
       dashboard: true,
       margin: true,
       errorLog: true,
@@ -81,9 +88,9 @@ User.beforeCreate(user => {
       mailBox: true,
       support: true,
       dataUpload: true,
-    };
+    });
   } else {
-    user.permissions = {};
+    user.permissions = JSON.stringify({});
   }
 });
 

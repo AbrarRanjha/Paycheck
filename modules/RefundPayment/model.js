@@ -2,7 +2,7 @@
 
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../db.js');
-const Employee = require('../User/model.js');
+const Employee = require('../user/model.js');
 
 const RefundPayments = sequelize.define(
   'RefundPayments',

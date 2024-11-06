@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-const jwt =require ('jsonwebtoken');
-const User =require ('../modules/User/model.js');
+const jwt = require('jsonwebtoken');
+const User = require('../modules/user/model.js');
 
- const authenticate = async (request, reply, next) => {
+const authenticate = async (request, reply, next) => {
   try {
     const authorizationHeader = request.headers.authorization;
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
@@ -45,7 +45,7 @@ const User =require ('../modules/User/model.js');
     reply.status(500).send({ message: 'Internal Server Error' });
   }
 };
- const adminAuthenticate = async (request, reply, next) => {
+const adminAuthenticate = async (request, reply, next) => {
   try {
     const authorizationHeader = request.headers.authorization;
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
@@ -92,4 +92,4 @@ const User =require ('../modules/User/model.js');
   }
 };
 
-module.exports ={authenticate,adminAuthenticate}
+module.exports = { authenticate, adminAuthenticate };
