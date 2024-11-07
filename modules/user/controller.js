@@ -49,7 +49,6 @@ class EmployeeController {
       const accessToken = EmployeeService.generateAccessToken(user.id);
       const userData = {
         ...user,
-        permissions: JSON.parse(user.permissions || '{}'),
         accessToken,
       };
       res.status(201).json({ message: 'login successfully', data: userData });

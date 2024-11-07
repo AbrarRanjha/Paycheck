@@ -45,7 +45,15 @@ class EmployeeService {
         where: whereClause,
         attributes: [
           'id',
-          'permissions',
+          'dashboard',
+          'margin',
+          'errorLog',
+          'commissionSplits',
+          'advisorPayout',
+          'advisorReport',
+          'mailBox',
+          'support',
+          'dataUpload',
           [Sequelize.literal("CONCAT(firstName, ' ', lastName)"), 'name'], // Concatenate firstName and lastName as fullName
         ],
         limit: limit || 10,
@@ -68,15 +76,9 @@ class EmployeeService {
         throw new Error('Employee not found');
       }
 
-      // Update only the permissions object by merging new values with the existing permissions
-      const updatedPermissions = {
-        ...employee.permissions,
-        ...permissionsData,
-      };
-
       // Perform the update with only the permissions field
       await Employee.update(
-        { permissions: JSON.stringify(updatedPermissions) },
+        { ...permissionsData },
         {
           where: { id: id },
         }

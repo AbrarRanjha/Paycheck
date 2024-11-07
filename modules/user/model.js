@@ -56,43 +56,50 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    dashboard: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    margin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    errorLog: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    commissionSplits: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    advisorPayout: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    advisorReport: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    mailBox: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    support: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    dataUpload: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
     notificationList: {
       type: DataTypes.JSON,
-    },
-    permissions: {
-      type: DataTypes.STRING,
-      defaultValue: '{}', // Store as an empty JSON object in string form
-      get() {
-        const rawValue = this.getDataValue('permissions');
-        return rawValue ? JSON.parse(rawValue) : {};
-      },
-      set(value) {
-        this.setDataValue('permissions', JSON.stringify(value));
-      },
     },
   },
   {
     timestamps: true,
   }
 );
-// Hook to set permissions based on role
-User.beforeCreate(user => {
-  if (user.role === 'manager') {
-    user.permissions = JSON.stringify({
-      dashboard: true,
-      margin: true,
-      errorLog: true,
-      commissionSplits: true,
-      advisorPayout: true,
-      advisorReport: true,
-      mailBox: true,
-      support: true,
-      dataUpload: true,
-    });
-  } else {
-    user.permissions = JSON.stringify({});
-  }
-});
 
 User.hasMany(ManagerNotification, { foreignKey: 'managerId' });
 ManagerNotification.belongsTo(User, {
