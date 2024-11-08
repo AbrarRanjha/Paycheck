@@ -106,7 +106,7 @@ async function getAdvisorPayoutPeriod(limit, skip, selectedPeriod) {
             LgMargin += detail.FCIRecognition;
           }
         } else if (selectedPeriod === 'monthly') {
-          if (detailCreatedAt.month() === currentMonth) {
+          if (detailCreatedAt.month() + 1 === currentMonth) {
             totalGrossFCI += detail.grossFCI;
             totalAdvisorSplit += detail.advisorSplitAmount;
             LgMargin += detail.FCIRecognition;
