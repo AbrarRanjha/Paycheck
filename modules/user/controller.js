@@ -164,6 +164,41 @@ class EmployeeController {
       res.status(500).json({ error: error.message });
     }
   }
+  async updateEmployeePermissions(req, res) {
+    try {
+      const { id } = req.params; // Get the employee ID from route parameters
+      const permissionsData = req.body.permissions; // Expect permissions data in the request body
+      // const permissionsData = JSON.stringify(permissionsData2);
+
+      if (!permissionsData) {
+        return res.status(400).json({ error: 'Permissions data is required' });
+      }
+
+      const updatedEmployee =
+        await EmployeeService.updateEmployeePermissionsById(
+          id,
+          permissionsData
+        );
+
+      return res.status(200).json(updatedEmployee); // Return the updated employee data
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getAllManagers(req, res) {
+    try {
+      const { limit = 10, skip = 0, search = '' } = req.query;
+      const result = await EmployeeService.getManagers(
+        parseInt(limit),
+        parseInt(skip),
+        search
+      );
+      return res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new EmployeeController();

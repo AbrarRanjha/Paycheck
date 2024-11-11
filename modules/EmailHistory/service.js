@@ -27,7 +27,7 @@ class EmailHistoryService {
     try {
       const histories = await EmailHistory.findAll({
         where: { senderEmail: email },
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
       });
       return histories;
     } catch (error) {

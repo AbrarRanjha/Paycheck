@@ -1,4 +1,4 @@
-// modules/User/service.js
+// modules/user/service.js
 
 /* eslint-disable no-undef */
 const jwt = require('jsonwebtoken');
@@ -7,6 +7,7 @@ const Employee = require('./model.js');
 const { Op } = require('sequelize');
 const { sendOtpEmail } = require('../../utils/utils.js');
 const EmailHistory = require('../EmailHistory/model.js');
+const { Sequelize } = require('sequelize');
 
 class EmployeeService {
   async createEmployee(employeeData) {
@@ -23,6 +24,73 @@ class EmployeeService {
       return employee;
     } catch (error) {
       throw new Error('Failed to get employee: ' + error.message);
+    }
+  }
+  async getManagers(limit, skip, search) {
+    try {
+      const whereClause = {
+        role: 'manager',
+      };
+
+      // Apply search if provided
+      if (search) {
+        whereClause[Op.or] = [
+          { firstName: { [Op.regexp]: search } },
+          { lastName: { [Op.regexp]: search } },
+        ];
+      }
+
+      // Using findAndCountAll to get both total count and paginated results
+      const result = await Employee.findAndCountAll({
+        where: whereClause,
+        attributes: [
+          'id',
+          'dashboard',
+          'margin',
+          'errorLog',
+          'commissionSplits',
+          'advisorPayout',
+          'advisorReport',
+          'mailBox',
+          'support',
+          'dataUpload',
+          [Sequelize.literal("CONCAT(firstName, ' ', lastName)"), 'name'], // Concatenate firstName and lastName as fullName
+        ],
+        limit: limit || 10,
+        offset: skip || 0,
+      });
+
+      return {
+        users: result.rows,
+        total: result.count,
+      };
+    } catch (error) {
+      throw new Error('Failed to get managers: ' + error.message);
+    }
+  }
+  async updateEmployeePermissionsById(id, permissionsData) {
+    try {
+      // Retrieve the existing employee
+      const employee = await Employee.findByPk(id);
+      if (!employee) {
+        throw new Error('Employee not found');
+      }
+
+      // Perform the update with only the permissions field
+      await Employee.update(
+        { ...permissionsData },
+        {
+          where: { id: id },
+        }
+      );
+
+      // Fetch the updated employee to return the latest data
+      const updatedEmployee = await Employee.findByPk(id);
+      return updatedEmployee;
+    } catch (error) {
+      throw new Error(
+        'Failed to update employee permissions: ' + error.message
+      );
     }
   }
 
