@@ -74,34 +74,60 @@ class errorLogsService {
 
   async getAllGrossFCIPeriodically(selectedMonth, selectedYear) {
     try {
-      let endDate
-      // Use the provided month (0-11) and year directly
-      const month = parseInt(selectedMonth);  // Convert month from string to number
-      const year = parseInt(selectedYear);    // Convert year from string to number
+      const month = parseInt(selectedMonth); // Convert month from string to number
+      const year = parseInt(selectedYear);   // Convert year from string to number
 
       // Start date is the first day of the provided month and year
       const startDate = new Date(year, month, 1);
       // End date is the last day of the provided month and year
-      endDate = new Date(year, month + 1, 0); // Set to the last day of the month
-      endDate.setHours(23, 59, 59, 999);      // End of the day
+      const endDate = new Date(year, month + 1, 0); // Last day of the month
 
-      console.log("startData", startDate, "//", endDate);
+      const weeks = [];
+      let currentStart = new Date(startDate); // Initialize with the start of the month
+      let weekNumber = 1;
 
-      const data = await SalesData.findAll({
-        where: {
-          paymentDate: { [Op.between]: [startDate, endDate] }, // Filter by date range
-        },
-        attributes: [
-          [Sequelize.fn('COALESCE', Sequelize.fn('SUM', Sequelize.col('grossFCI')), 0), 'totalGrossFCI'], // Sum the grossFCI for the selected period
-        ],
-      });
+      // Loop through each week until the end of the month
+      while (currentStart <= endDate) {
+        let currentEnd = new Date(currentStart); // Copy start date
+        currentEnd.setDate(currentStart.getDate() + 6); // Add 6 days to get the end of the week
+        if (currentEnd > endDate) {
+          currentEnd = new Date(endDate); // If end exceeds the month's end, set to end of the month
+        }
+        currentEnd.setHours(23, 59, 59, 999); // Set to the end of the day
 
-      return data;
+        console.log(`Fetching data for week ${weekNumber} from`, currentStart, "to", currentEnd);
+
+        // Fetch data for the current week
+        const weekData = await SalesData.findAll({
+          where: {
+            paymentDate: { [Op.between]: [currentStart, currentEnd] }, // Filter by the current week's range
+          },
+          attributes: [
+            [Sequelize.fn('COALESCE', Sequelize.fn('SUM', Sequelize.col('grossFCI')), 0), 'totalGrossFCI'], // Sum the grossFCI for the week
+          ],
+        });
+
+        // Push the result for the week in the format { weekN: grossFCI }
+        weeks.push({
+          [`week${weekNumber}`]: weekData[0].dataValues.totalGrossFCI || 0,
+        });
+
+        // Move to the next week
+        currentStart = new Date(currentEnd);
+        currentStart.setDate(currentStart.getDate() + 1); // Start of the next week
+        currentStart.setHours(0, 0, 0, 0); // Start of the day
+
+        // Increment the week number
+        weekNumber++;
+      }
+
+      return weeks; // Return array of objects in the format {weekN: grossFCI}
     } catch (error) {
       console.log('error', error);
       throw new Error('Failed to get GrossFCI: ' + error.message);
     }
   }
+
   async getAllEarlyPaymentPending() {
     try {
       const allLogs = await EarlyPayments.count({

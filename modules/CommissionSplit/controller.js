@@ -46,6 +46,7 @@ class CommissionSplitController {
   async updateCommissionSplit(req, res) {
     try {
       const { limit, skip } = req.query;
+      const { id } = req.params;
       if (!limit || !skip) {
         return res.status(400).json({ error: 'Limit or skip is undefined' });
       }
@@ -58,7 +59,7 @@ class CommissionSplitController {
         );
       }
       const CommissionSplit =
-        await CommissionSplitService.getAllCommissionSplit(limit, skip);
+        await CommissionSplitService.getAllCommissionSplit(id, limit, skip);
       return res.status(200).json(CommissionSplit);
     } catch (error) {
       console.log('error: ' + error);

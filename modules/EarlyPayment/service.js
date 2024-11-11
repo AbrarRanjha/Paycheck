@@ -51,10 +51,16 @@ class EarlyPaymentModelService {
         });
         const expensesDetail = await ExpensesDetail.findOne({ where: { PayoutID: PayoutDetail.id } });
         console.log('payoutDetail', PayoutDetail);
-
-        expensesDetail.advances =
-          expensesDetail.advances + earlyPayment?.requestPaymentAmount;
-        await expensesDetail.save();
+        if (!expensesDetail) {
+          await ExpensesDetail.create({
+            PayoutID: PayoutDetail.id,
+            advances: earlyPayment?.requestPaymentAmount
+          });
+        } else {
+          expensesDetail.advances =
+            expensesDetail.advances + earlyPayment?.requestPaymentAmount;
+          await expensesDetail.save();
+        }
         console.log('earlyPayment', earlyPayment);
 
         await ManagerNotification.create({

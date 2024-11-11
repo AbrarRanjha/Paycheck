@@ -5,6 +5,7 @@ const Upload = require('./model.js');
 const ErrorLogs = require('../ErrorLogs/model.js');
 const Payout = require('../Payouts/model.js');
 const advisorDetail = require('../Payouts/advisorDetail.js');
+const ExpensesDetail = require('../Payouts/ExpensesDetail.js');
 
 class uploadService {
   async getUploadById(id) {
@@ -212,6 +213,7 @@ class uploadService {
           advisorId,
         };
         const Payouts = await Payout.create(payoutData);
+        await ExpensesDetail.create({ PayoutID: Payouts?.id });
         await advisorDetail.create({
           PayoutID: Payouts.id,
           uploadId: uploadId,

@@ -49,10 +49,16 @@ class RefundPaymentModelService {
         });
         console.log('payoutDetail', PayoutDetail);
         const expensesDetail = await ExpensesDetail.findOne({ where: { PayoutID: PayoutDetail.id } });
-
-        expensesDetail.advances =
-          expensesDetail.advances + RefundPayment?.requestPaymentAmount;
-        await expensesDetail.save();
+        if (!expensesDetail) {
+          await ExpensesDetail.create({
+            PayoutID: PayoutDetail.id,
+            advances: RefundPayment?.requestPaymentAmount
+          });
+        } else {
+          expensesDetail.advances =
+            expensesDetail.advances + RefundPayment?.requestPaymentAmount;
+          await expensesDetail.save();
+        }
         await ManagerNotification.create({
           date: new Date(),
           note: `${adminName} Approved the Refund request`,
