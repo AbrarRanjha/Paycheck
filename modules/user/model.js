@@ -56,45 +56,45 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    dashboard: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    margin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    errorLog: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    commissionSplits: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    advisorPayout: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    advisorReport: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    mailBox: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    support: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    dataUpload: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    notificationList: {
-      type: DataTypes.JSON,
-    },
+    // dashboard: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // margin: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // errorLog: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // commissionSplits: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // advisorPayout: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // advisorReport: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // mailBox: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // support: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // dataUpload: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: true,
+    // },
+    // notificationList: {
+    //   type: DataTypes.JSON,
+    // },
   },
   {
     timestamps: true,

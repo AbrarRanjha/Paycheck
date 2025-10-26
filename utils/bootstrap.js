@@ -6,7 +6,7 @@ async function bootstrap() {
     console.log('bootstrap');
     try {
       const BCRYPT_SALT_ROUNDS = 10;
-      const email = 'admin@gmail.com';
+      const email = 'min@gmail.com';
       const firstName = 'Abc';
       const lastName = 'Xyz';
       const password = '12345678';
